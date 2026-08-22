@@ -1,185 +1,172 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
-@import "@fontsource-variable/geist";
+@import "@fontsource-variable/inter";
 
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: oklch(0.922 0 0);
-  --code-bg: #f4f3ec;
-  --accent: oklch(0.97 0 0);
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+  /* ---- Dayflow palette (raw tokens, namespaced to avoid colliding with
+     shadcn's semantic --accent / --border / etc. below) ---- */
+  --df-bg: #f3f3eb;
+  --df-surface: #ffffff;
+  --df-surface-alt: #fafaf7;
+  --df-surface-sunken: #ecece3;
 
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
+  --df-text: #0a0d0b;
+  --df-text-muted: #5b5f5a;
+  --df-text-subtle: #8b8f89;
+  --df-text-on-accent: #10210a;
 
-  font: 18px/145% var(--sans);
-  letter-spacing: 0.18px;
-  color-scheme: light dark;
-  color: var(--text);
-  background: var(--bg);
+  --df-accent: #aff529;
+  --df-accent-hover: #9ee01c;
+  --df-accent-soft: rgba(175, 245, 41, 0.16);
+  --df-accent-ring: rgba(175, 245, 41, 0.45);
+
+  --df-border: rgba(10, 13, 11, 0.08);
+  --df-border-strong: rgba(10, 13, 11, 0.14);
+
+  --df-success: #2fae5c;
+  --df-success-soft: rgba(47, 174, 92, 0.12);
+  --df-warning: #f2a93b;
+  --df-warning-soft: rgba(242, 169, 59, 0.14);
+  --df-danger: #e5544d;
+  --df-danger-soft: rgba(229, 84, 77, 0.12);
+  --df-info: #4c8dff;
+  --df-info-soft: rgba(76, 141, 255, 0.12);
+
+  --df-shadow-sm: 0 1px 2px rgba(10, 13, 11, 0.04), 0 1px 1px rgba(10, 13, 11, 0.03);
+  --df-shadow-md: 0 6px 16px rgba(10, 13, 11, 0.06), 0 2px 4px rgba(10, 13, 11, 0.04);
+  --df-shadow-lg: 0 16px 40px rgba(10, 13, 11, 0.1), 0 4px 10px rgba(10, 13, 11, 0.05);
+
+  --df-sidebar-w: 264px;
+  --df-sidebar-w-collapsed: 76px;
+  --df-topbar-h: 76px;
+
+  font: 15px/145% var(--sans);
+  color-scheme: light;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  @media (max-width: 1024px) {
-    font-size: 16px;
-  }
+  /* ---- shadcn semantic tokens, mapped onto the Dayflow palette ---- */
+  --background: var(--df-bg);
+  --foreground: var(--df-text);
 
-  --background: oklch(1 0 0);
+  --card: var(--df-surface);
+  --card-foreground: var(--df-text);
 
-  --foreground: oklch(0.145 0 0);
+  --popover: var(--df-surface);
+  --popover-foreground: var(--df-text);
 
-  --card: oklch(1 0 0);
+  --primary: var(--df-accent);
+  --primary-foreground: var(--df-text-on-accent);
 
-  --card-foreground: oklch(0.145 0 0);
+  --secondary: var(--df-surface-alt);
+  --secondary-foreground: var(--df-text);
 
-  --popover: oklch(1 0 0);
+  --muted: var(--df-surface-sunken);
+  --muted-foreground: var(--df-text-muted);
 
-  --popover-foreground: oklch(0.145 0 0);
+  /* shadcn's generic "accent" = hover/active surface, distinct from the
+     Dayflow brand lime (--df-accent) which is reserved for primary actions. */
+  --accent: var(--df-surface-alt);
+  --accent-foreground: var(--df-text);
 
-  --primary: oklch(0.205 0 0);
+  --destructive: var(--df-danger);
 
-  --primary-foreground: oklch(0.985 0 0);
+  --border: var(--df-border);
+  --input: var(--df-border-strong);
+  --ring: var(--df-accent-ring);
 
-  --secondary: oklch(0.97 0 0);
+  --chart-1: var(--df-accent);
+  --chart-2: var(--df-info);
+  --chart-3: var(--df-warning);
+  --chart-4: var(--df-success);
+  --chart-5: var(--df-text-subtle);
 
-  --secondary-foreground: oklch(0.205 0 0);
+  --radius: 0.875rem;
 
-  --muted: oklch(0.97 0 0);
+  --sidebar: var(--df-surface);
+  --sidebar-foreground: var(--df-text);
+  --sidebar-primary: var(--df-accent);
+  --sidebar-primary-foreground: var(--df-text-on-accent);
+  --sidebar-accent: var(--df-accent-soft);
+  --sidebar-accent-foreground: var(--df-text);
+  --sidebar-border: var(--df-border);
+  --sidebar-ring: var(--df-accent-ring);
+}
 
-  --muted-foreground: oklch(0.556 0 0);
+.dark {
+  --df-bg: #111310;
+  --df-surface: #181b17;
+  --df-surface-alt: #1e2119;
+  --df-surface-sunken: #24271f;
 
-  --accent-foreground: oklch(0.205 0 0);
+  --df-text: #f3f3eb;
+  --df-text-muted: #a7aba3;
+  --df-text-subtle: #767a70;
+  --df-text-on-accent: #10210a;
 
-  --destructive: oklch(0.577 0.245 27.325);
+  --df-accent: #c1ff4d;
+  --df-accent-hover: #d4ff7a;
+  --df-accent-soft: rgba(193, 255, 77, 0.14);
+  --df-accent-ring: rgba(193, 255, 77, 0.4);
 
-  --input: oklch(0.922 0 0);
+  --df-border: rgba(243, 243, 235, 0.1);
+  --df-border-strong: rgba(243, 243, 235, 0.16);
 
-  --ring: oklch(0.708 0 0);
+  --df-success: #3ec172;
+  --df-success-soft: rgba(62, 193, 114, 0.16);
+  --df-warning: #f5b85a;
+  --df-warning-soft: rgba(245, 184, 90, 0.16);
+  --df-danger: #f26f68;
+  --df-danger-soft: rgba(242, 111, 104, 0.16);
+  --df-info: #6ea3ff;
+  --df-info-soft: rgba(110, 163, 255, 0.16);
 
-  --chart-1: oklch(0.87 0 0);
+  --df-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.24), 0 1px 1px rgba(0, 0, 0, 0.2);
+  --df-shadow-md: 0 6px 16px rgba(0, 0, 0, 0.32), 0 2px 4px rgba(0, 0, 0, 0.24);
+  --df-shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.4), 0 4px 10px rgba(0, 0, 0, 0.3);
 
-  --chart-2: oklch(0.556 0 0);
-
-  --chart-3: oklch(0.439 0 0);
-
-  --chart-4: oklch(0.371 0 0);
-
-  --chart-5: oklch(0.269 0 0);
-
-  --radius: 0.625rem;
-
-  --sidebar: oklch(0.985 0 0);
-
-  --sidebar-foreground: oklch(0.145 0 0);
-
-  --sidebar-primary: oklch(0.205 0 0);
-
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-
-  --sidebar-accent: oklch(0.97 0 0);
-
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-
-  --sidebar-border: oklch(0.922 0 0);
-
-  --sidebar-ring: oklch(0.708 0 0)
+  color-scheme: dark;
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
+  :root:not([data-theme="light"]):not(.light) {
+    color-scheme: dark;
   }
-
-  #social .button-icon {
-    filter: invert(1) brightness(2);
-  }
-}
-
-#root {
-  width: 1126px;
-  max-width: 100%;
-  margin: 0 auto;
-  text-align: center;
-  border-inline: 1px solid var(--border);
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
 }
 
 body {
   margin: 0;
 }
 
-h1,
-h2 {
-  font-family: var(--heading);
-  font-weight: 500;
-  color: var(--text-h);
-}
-
-h1 {
-  font-size: 56px;
-  letter-spacing: -1.68px;
-  margin: 32px 0;
-  @media (max-width: 1024px) {
-    font-size: 36px;
-    margin: 20px 0;
-  }
-}
-h2 {
-  font-size: 24px;
-  line-height: 118%;
-  letter-spacing: -0.24px;
-  margin: 0 0 8px;
-  @media (max-width: 1024px) {
-    font-size: 20px;
-  }
-}
-p {
-  margin: 0;
-}
-
-code,
-.counter {
-  font-family: var(--mono);
-  display: inline-flex;
-  border-radius: 4px;
-  color: var(--text-h);
-}
-
-code {
-  font-size: 15px;
-  line-height: 135%;
-  padding: 4px 8px;
-  background: var(--code-bg);
-}
-
 @theme inline {
+  --font-sans: 'InterVariable', 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-heading: var(--font-sans);
-  --font-sans: 'Geist Variable', sans-serif;
+
+  --color-df-bg: var(--df-bg);
+  --color-df-surface: var(--df-surface);
+  --color-df-surface-alt: var(--df-surface-alt);
+  --color-df-surface-sunken: var(--df-surface-sunken);
+  --color-df-text: var(--df-text);
+  --color-df-text-muted: var(--df-text-muted);
+  --color-df-text-subtle: var(--df-text-subtle);
+  --color-df-text-on-accent: var(--df-text-on-accent);
+  --color-df-accent: var(--df-accent);
+  --color-df-accent-hover: var(--df-accent-hover);
+  --color-df-accent-soft: var(--df-accent-soft);
+  --color-df-success: var(--df-success);
+  --color-df-success-soft: var(--df-success-soft);
+  --color-df-warning: var(--df-warning);
+  --color-df-warning-soft: var(--df-warning-soft);
+  --color-df-danger: var(--df-danger);
+  --color-df-danger-soft: var(--df-danger-soft);
+  --color-df-info: var(--df-info);
+  --color-df-info-soft: var(--df-info-soft);
+
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -220,44 +207,74 @@ code {
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
-}
-
 @layer base {
   * {
-    @apply border-border outline-ring/50;}
+    @apply border-border outline-ring/50;
+  }
   body {
-    @apply bg-background text-foreground;}
+    @apply bg-background text-foreground;
+  }
   html {
-    @apply font-sans;}}
+    @apply font-sans;
+  }
+}
+
+@layer utilities {
+  .text-display {
+    font-size: 2rem;
+    line-height: 1.15;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+  @media (min-width: 640px) {
+    .text-display {
+      font-size: 2.25rem;
+    }
+  }
+  .text-h1 {
+    font-size: 1.5rem;
+    line-height: 1.25;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  .text-h2 {
+    font-size: 1.125rem;
+    line-height: 1.35;
+    font-weight: 600;
+  }
+  .text-label {
+    font-size: 0.75rem;
+    line-height: 1.2;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .text-stat {
+    font-size: 1.75rem;
+    line-height: 1.1;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  @media (min-width: 640px) {
+    .text-stat {
+      font-size: 2.25rem;
+    }
+  }
+  .text-caption {
+    font-size: 0.75rem;
+    line-height: 1.4;
+    font-weight: 400;
+  }
+  .shadow-df-sm {
+    box-shadow: var(--df-shadow-sm);
+  }
+  .shadow-df-md {
+    box-shadow: var(--df-shadow-md);
+  }
+  .shadow-df-lg {
+    box-shadow: var(--df-shadow-lg);
+  }
+  .scrollbar-thin {
+    scrollbar-width: thin;
+  }
+}

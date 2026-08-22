@@ -1,0 +1,14 @@
+export const paths = {
+  signIn: "/sign-in",
+  forgotPassword: "/forgot-password",
+  resetPassword: "/reset-password",
+  dashboard: "/dashboard",
+  employees: "/employees",
+  employee: (id: string) => `/employees/${id}`,
+  profile: "/profile",
+  attendance: "/attendance",
+  timeOff: "/time-off",
+  salary: "/salary",
+  settings: "/settings",
+  unauthorized: "/unauthorized",
+} as const
