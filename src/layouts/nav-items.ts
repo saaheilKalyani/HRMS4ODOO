@@ -20,7 +20,7 @@ export interface NavItem {
 
 export const navItems: NavItem[] = [
   { label: "Dashboard", to: paths.dashboard, icon: LayoutDashboardIcon },
-  { label: "Employees", to: paths.employees, icon: UsersIcon, roles: ["admin", "hr"] },
+  { label: "Employees", to: paths.employees, icon: UsersIcon, roles: ["admin"] },
   { label: "Attendance", to: paths.attendance, icon: CalendarCheckIcon },
   { label: "Time Off", to: paths.timeOff, icon: PlaneTakeoffIcon },
   { label: "Salary", to: paths.salary, icon: WalletIcon, roles: ["admin"] },

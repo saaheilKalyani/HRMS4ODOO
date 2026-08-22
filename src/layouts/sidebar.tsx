@@ -15,10 +15,10 @@ import { useAuth } from "@/features/auth/auth-context"
 import { navItemsForRole } from "@/layouts/nav-items"
 import { cn } from "@/lib/utils"
 import { paths } from "@/routes/paths"
+import type { UserRole } from "@/types/domain"
 
-const roleLabel: Record<string, string> = {
+const roleLabel: Record<UserRole, string> = {
   admin: "Admin",
-  hr: "HR Officer",
   employee: "Employee",
 }
 

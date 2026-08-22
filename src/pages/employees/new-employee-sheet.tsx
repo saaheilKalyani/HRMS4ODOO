@@ -30,11 +30,10 @@ import type { UserRole } from "@/types/domain"
 
 const roleOptions: { value: UserRole; label: string }[] = [
   { value: "employee", label: "Employee" },
-  { value: "hr", label: "HR Officer" },
   { value: "admin", label: "Admin" },
 ]
 
-export function NewEmployeeSheet({ currentUserRole }: { currentUserRole: UserRole }) {
+export function NewEmployeeSheet() {
   const [open, setOpen] = React.useState(false)
   const [result, setResult] = React.useState<{ loginId: string; tempPassword: string; name: string } | null>(null)
   const createEmployee = useCreateEmployee()
@@ -54,8 +53,6 @@ export function NewEmployeeSheet({ currentUserRole }: { currentUserRole: UserRol
   const [firstName, lastName, joiningDate] = watch(["firstName", "lastName", "joiningDate"])
   const preview =
     firstName && lastName && joiningDate ? generateLoginId(firstName, lastName, joiningDate, 1) : null
-
-  const availableRoles = currentUserRole === "admin" ? roleOptions : roleOptions.filter((r) => r.value !== "admin")
 
   const onSubmit = async (values: NewEmployeeValues) => {
     const res = await createEmployee.mutateAsync(values)
@@ -180,7 +177,7 @@ export function NewEmployeeSheet({ currentUserRole }: { currentUserRole: UserRol
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {availableRoles.map((r) => (
+                      {roleOptions.map((r) => (
                         <SelectItem key={r.value} value={r.value}>
                           {r.label}
                         </SelectItem>

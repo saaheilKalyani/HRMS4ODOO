@@ -27,10 +27,8 @@ import { employeeCoreEditSchema, type EmployeeCoreEditValues } from "@/lib/valid
 import type { Employee, EmploymentStatus } from "@/types/domain"
 
 const statusOptions: { value: EmploymentStatus; label: string }[] = [
-  { value: "active", label: "Active" },
-  { value: "on_leave", label: "On Leave" },
-  { value: "inactive", label: "Inactive" },
-  { value: "terminated", label: "Terminated" },
+  { value: "Active", label: "Active" },
+  { value: "Inactive", label: "Inactive" },
 ]
 
 export function CoreEditDialog({ employee }: { employee: Employee }) {
@@ -46,9 +44,9 @@ export function CoreEditDialog({ employee }: { employee: Employee }) {
   } = useForm<EmployeeCoreEditValues>({
     resolver: zodResolver(employeeCoreEditSchema),
     defaultValues: {
-      phone: employee.phone,
-      department: employee.department,
-      jobTitle: employee.job_title,
+      phone: employee.phone ?? "",
+      department: employee.department ?? "",
+      jobTitle: employee.job_title ?? "",
       employmentStatus: employee.employment_status,
     },
   })

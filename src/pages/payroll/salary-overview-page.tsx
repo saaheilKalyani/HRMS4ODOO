@@ -82,7 +82,7 @@ export default function SalaryOverviewPage() {
                       <span className="text-sm font-medium text-df-text">{person.employee.full_name}</span>
                     </div>
                   </TableCell>
-                  <TableCell>{person.employee.department}</TableCell>
+                  <TableCell>{person.employee.department || "—"}</TableCell>
                   <TableCell className="text-right tabular-nums">
                     {structure ? formatCurrency(structure.basic_salary) : "—"}
                   </TableCell>

@@ -14,7 +14,7 @@ import { paths } from "@/routes/paths"
 
 const demoAccounts = [
   { role: "Admin", loginId: "OIANVE20200001", password: "Admin@123" },
-  { role: "HR Officer", loginId: "OIROME20210001", password: "Hr@12345" },
+  { role: "Admin (HR)", loginId: "OIROME20210001", password: "Hr@12345" },
   { role: "Employee", loginId: "OIPRSH20220001", password: "Employee@123" },
 ]
 

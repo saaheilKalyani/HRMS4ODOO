@@ -53,21 +53,21 @@ interface RequestPlan {
 }
 
 const requestPlans: RequestPlan[] = [
-  { id: "lr-01", employeeId: "emp-01", leaveTypeId: "lt-paid", offsetStart: -40, offsetEnd: -38, status: "approved", reason: "Family function", approverId: HR_PROFILE_ID, comment: "Enjoy the time off." },
-  { id: "lr-02", employeeId: "emp-02", leaveTypeId: "lt-casual", offsetStart: -25, offsetEnd: -24, status: "approved", reason: "Personal errand", approverId: ADMIN_PROFILE_ID, comment: "Approved." },
-  { id: "lr-03", employeeId: "emp-03", leaveTypeId: "lt-sick", offsetStart: -15, offsetEnd: -14, status: "approved", reason: "Fever, resting at home", approverId: HR_PROFILE_ID, comment: "Get well soon." },
-  { id: "lr-04", employeeId: "emp-03", leaveTypeId: "lt-paid", offsetStart: 6, offsetEnd: 8, status: "pending", reason: "Family trip planned in advance" },
-  { id: "lr-05", employeeId: "emp-04", leaveTypeId: "lt-paid", offsetStart: -30, offsetEnd: -29, status: "approved", reason: "Wedding in the family", approverId: HR_PROFILE_ID, comment: "Approved, have fun." },
-  { id: "lr-06", employeeId: "emp-05", leaveTypeId: "lt-unpaid", offsetStart: -20, offsetEnd: -19, status: "rejected", reason: "Extended personal trip", approverId: ADMIN_PROFILE_ID, comment: "Coverage conflict during sprint — please pick alternate dates." },
-  { id: "lr-07", employeeId: "emp-05", leaveTypeId: "lt-sick", offsetStart: -50, offsetEnd: -49, status: "approved", reason: "Flu", approverId: HR_PROFILE_ID, comment: "Approved." },
-  { id: "lr-08", employeeId: "emp-06", leaveTypeId: "lt-casual", offsetStart: 3, offsetEnd: 3, status: "pending", reason: "Personal work" },
-  { id: "lr-09", employeeId: "emp-07", leaveTypeId: "lt-paid", offsetStart: -1, offsetEnd: 2, status: "approved", reason: "Pre-planned vacation", approverId: HR_PROFILE_ID, comment: "Approved, see you back on the 3rd." },
-  { id: "lr-10", employeeId: "emp-08", leaveTypeId: "lt-paid", offsetStart: -35, offsetEnd: -34, status: "approved", reason: "Family event", approverId: ADMIN_PROFILE_ID, comment: "Approved." },
-  { id: "lr-11", employeeId: "emp-09", leaveTypeId: "lt-sick", offsetStart: 10, offsetEnd: 11, status: "pending", reason: "Scheduled minor surgery, doctor's note attached" },
-  { id: "lr-12", employeeId: "emp-10", leaveTypeId: "lt-unpaid", offsetStart: -10, offsetEnd: -9, status: "rejected", reason: "Extending a weekend trip", approverId: HR_PROFILE_ID, comment: "Insufficient notice for infra on-call coverage." },
-  { id: "lr-13", employeeId: "emp-11", leaveTypeId: "lt-paid", offsetStart: -45, offsetEnd: -43, status: "approved", reason: "Annual family vacation", approverId: ADMIN_PROFILE_ID, comment: "Approved." },
-  { id: "lr-14", employeeId: "emp-12", leaveTypeId: "lt-casual", offsetStart: -18, offsetEnd: -17, status: "approved", reason: "Moving apartments", approverId: HR_PROFILE_ID, comment: "Approved." },
-  { id: "lr-15", employeeId: "emp-13", leaveTypeId: "lt-paid", offsetStart: 5, offsetEnd: 5, status: "pending", reason: "Sister's engagement ceremony" },
+  { id: "lr-01", employeeId: "emp-01", leaveTypeId: "lt-paid", offsetStart: -40, offsetEnd: -38, status: "Approved", reason: "Family function", approverId: HR_PROFILE_ID, comment: "Enjoy the time off." },
+  { id: "lr-02", employeeId: "emp-02", leaveTypeId: "lt-casual", offsetStart: -25, offsetEnd: -24, status: "Approved", reason: "Personal errand", approverId: ADMIN_PROFILE_ID, comment: "Approved." },
+  { id: "lr-03", employeeId: "emp-03", leaveTypeId: "lt-sick", offsetStart: -15, offsetEnd: -14, status: "Approved", reason: "Fever, resting at home", approverId: HR_PROFILE_ID, comment: "Get well soon." },
+  { id: "lr-04", employeeId: "emp-03", leaveTypeId: "lt-paid", offsetStart: 6, offsetEnd: 8, status: "Pending", reason: "Family trip planned in advance" },
+  { id: "lr-05", employeeId: "emp-04", leaveTypeId: "lt-paid", offsetStart: -30, offsetEnd: -29, status: "Approved", reason: "Wedding in the family", approverId: HR_PROFILE_ID, comment: "Approved, have fun." },
+  { id: "lr-06", employeeId: "emp-05", leaveTypeId: "lt-unpaid", offsetStart: -20, offsetEnd: -19, status: "Rejected", reason: "Extended personal trip", approverId: ADMIN_PROFILE_ID, comment: "Coverage conflict during sprint — please pick alternate dates." },
+  { id: "lr-07", employeeId: "emp-05", leaveTypeId: "lt-sick", offsetStart: -50, offsetEnd: -49, status: "Approved", reason: "Flu", approverId: HR_PROFILE_ID, comment: "Approved." },
+  { id: "lr-08", employeeId: "emp-06", leaveTypeId: "lt-casual", offsetStart: 3, offsetEnd: 3, status: "Pending", reason: "Personal work" },
+  { id: "lr-09", employeeId: "emp-07", leaveTypeId: "lt-paid", offsetStart: -1, offsetEnd: 2, status: "Approved", reason: "Pre-planned vacation", approverId: HR_PROFILE_ID, comment: "Approved, see you back on the 3rd." },
+  { id: "lr-10", employeeId: "emp-08", leaveTypeId: "lt-paid", offsetStart: -35, offsetEnd: -34, status: "Approved", reason: "Family event", approverId: ADMIN_PROFILE_ID, comment: "Approved." },
+  { id: "lr-11", employeeId: "emp-09", leaveTypeId: "lt-sick", offsetStart: 10, offsetEnd: 11, status: "Pending", reason: "Scheduled minor surgery, doctor's note attached" },
+  { id: "lr-12", employeeId: "emp-10", leaveTypeId: "lt-unpaid", offsetStart: -10, offsetEnd: -9, status: "Rejected", reason: "Extending a weekend trip", approverId: HR_PROFILE_ID, comment: "Insufficient notice for infra on-call coverage." },
+  { id: "lr-13", employeeId: "emp-11", leaveTypeId: "lt-paid", offsetStart: -45, offsetEnd: -43, status: "Approved", reason: "Annual family vacation", approverId: ADMIN_PROFILE_ID, comment: "Approved." },
+  { id: "lr-14", employeeId: "emp-12", leaveTypeId: "lt-casual", offsetStart: -18, offsetEnd: -17, status: "Approved", reason: "Moving apartments", approverId: HR_PROFILE_ID, comment: "Approved." },
+  { id: "lr-15", employeeId: "emp-13", leaveTypeId: "lt-paid", offsetStart: 5, offsetEnd: 5, status: "Pending", reason: "Sister's engagement ceremony" },
 ]
 
 function buildLeaveData(today: Date) {
@@ -77,7 +77,7 @@ function buildLeaveData(today: Date) {
   for (const plan of requestPlans) {
     const start = addDays(today, plan.offsetStart)
     const end = addDays(today, plan.offsetEnd)
-    const created = addDays(start, plan.status === "pending" ? -2 : -4)
+    const created = addDays(start, plan.status === "Pending" ? -2 : -4)
 
     leaveRequests.push({
       id: plan.id,
@@ -88,10 +88,10 @@ function buildLeaveData(today: Date) {
       reason: plan.reason,
       status: plan.status,
       created_at: created.toISOString(),
-      updated_at: (plan.status === "pending" ? created : addDays(start, -1)).toISOString(),
+      updated_at: (plan.status === "Pending" ? created : addDays(start, -1)).toISOString(),
     })
 
-    if (plan.status !== "pending" && plan.approverId) {
+    if (plan.status !== "Pending" && plan.approverId) {
       leaveApprovals.push({
         id: `la-${plan.id}`,
         leave_request_id: plan.id,
@@ -115,7 +115,7 @@ function isWithinApprovedLeave(
   return leaveRequests.some(
     (r) =>
       r.employee_id === employeeId &&
-      r.status === "approved" &&
+      r.status === "Approved" &&
       r.start_date <= d &&
       d <= r.end_date
   )
@@ -140,7 +140,7 @@ function buildAttendance(today: Date, leaveRequests: LeaveRequest[]): Attendance
             attendance_date: dateStr(day),
             check_in: null,
             check_out: null,
-            status: "leave",
+            status: "Leave",
             total_hours: null,
             created_at: day.toISOString(),
             updated_at: day.toISOString(),
@@ -148,16 +148,16 @@ function buildAttendance(today: Date, leaveRequests: LeaveRequest[]): Attendance
         } else if (!isToday) {
           const seed = `${employeeId}-${dateStr(day)}`
           const roll = seededRandom(`${seed}-status`)
-          const status = roll < 0.05 ? "absent" : roll < 0.1 ? "half_day" : "present"
+          const status = roll < 0.05 ? "Absent" : roll < 0.1 ? "Half-day" : "Present"
 
-          if (status === "absent") {
+          if (status === "Absent") {
             records.push({
               id: `att-${seed}`,
               employee_id: employeeId,
               attendance_date: dateStr(day),
               check_in: null,
               check_out: null,
-              status: "absent",
+              status: "Absent",
               total_hours: 0,
               created_at: day.toISOString(),
               updated_at: day.toISOString(),
@@ -165,7 +165,7 @@ function buildAttendance(today: Date, leaveRequests: LeaveRequest[]): Attendance
           } else {
             const inMin = seededInt(`${seed}-in`, 8 * 60 + 45, 9 * 60 + 40)
             const outMin =
-              status === "half_day"
+              status === "Half-day"
                 ? inMin + seededInt(`${seed}-out`, 210, 270)
                 : seededInt(`${seed}-out`, 17 * 60 + 45, 19 * 60 + 10)
             const totalHours = Math.round(((outMin - inMin) / 60) * 100) / 100
@@ -202,7 +202,7 @@ function buildLeaveBalances(leaveRequests: LeaveRequest[]): LeaveBalance[] {
           (r) =>
             r.employee_id === person.employee.id &&
             r.leave_type_id === type.id &&
-            r.status === "approved"
+            r.status === "Approved"
         )
         .reduce((sum, r) => {
           const days =
@@ -276,9 +276,9 @@ function buildSalary(): { structures: SalaryStructure[]; details: SalaryComponen
       allowances: Math.round(allowances * 100) / 100,
       deductions: Math.round((pfEmployee + professionalTax) * 100) / 100,
       net_salary: Math.round((monthWage - pfEmployee - professionalTax) * 100) / 100,
-      effective_from: person.employee.joining_date,
-      created_at: person.employee.joining_date,
-      updated_at: person.employee.joining_date,
+      effective_from: person.employee.joining_date ?? new Date().toISOString(),
+      created_at: person.employee.joining_date ?? new Date().toISOString(),
+      updated_at: person.employee.joining_date ?? new Date().toISOString(),
     })
 
     void fixedAllowance

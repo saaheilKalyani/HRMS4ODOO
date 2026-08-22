@@ -1,17 +1,23 @@
 /**
- * Domain types mirror the shared data contract in DAYFLOW_PROJECT_CONTEXT.md §10/§12.
- * Table-backed fields (profiles, employees, attendance_records, leave_types,
- * leave_requests, leave_approvals, salary_structures) must stay in sync with
- * whatever the DB owner ships — do not rename/remove them without team sign-off.
+ * Domain types mirror the FROZEN contracts:
+ *   - "Dayflow — API & Data Contracts v1.0.md" (§5 status enums, §6 entities, §27 naming)
+ *   - "DB_SCHEMA_README.md" (table/column definitions)
+ *
+ * These are team-approved and frozen. Do not rename fields, change status
+ * values, or add P0 entities without a team contract change (see §1 of the
+ * API contract). Table-backed fields (profiles, employees, attendance_records,
+ * leave_types, leave_requests, leave_approvals, salary_structures) must stay
+ * in exact sync with those two documents.
  *
  * Fields under "UI extension" are needed by the approved DayflowBuildPrompt.md
- * design but are not yet part of the approved DB contract. They're kept in
+ * visual design but are NOT part of the frozen contract. They're kept in
  * separate `*Detail` types so swapping in real Supabase data only requires
  * filling those in (or dropping the panels that use them), not touching the
  * core contract types.
  */
 
-export type UserRole = "admin" | "hr" | "employee"
+/** Contract §5 — frozen. Only two roles exist; there is no separate "hr" role. */
+export type UserRole = "admin" | "employee"
 
 export interface Profile {
   id: string
@@ -23,25 +29,27 @@ export interface Profile {
   updated_at: string
 }
 
-export type EmploymentStatus = "active" | "inactive" | "on_leave" | "terminated"
+/** Contract §5 — frozen, exactly two values. */
+export type EmploymentStatus = "Active" | "Inactive"
 
 export interface Employee {
   id: string
   profile_id: string
   employee_code: string
   full_name: string
-  phone: string
-  address: string
-  department: string
-  job_title: string
-  joining_date: string
+  phone: string | null
+  address: string | null
+  department: string | null
+  job_title: string | null
+  joining_date: string | null
   employment_status: EmploymentStatus
   profile_picture_url: string | null
   created_at: string
   updated_at: string
 }
 
-export type AttendanceStatus = "present" | "absent" | "half_day" | "leave"
+/** Contract §5 — frozen. */
+export type AttendanceStatus = "Present" | "Absent" | "Half-day" | "Leave"
 
 export interface AttendanceRecord {
   id: string
@@ -62,7 +70,8 @@ export interface LeaveType {
   is_active: boolean
 }
 
-export type LeaveStatus = "pending" | "approved" | "rejected"
+/** Contract §5 — frozen. */
+export type LeaveStatus = "Pending" | "Approved" | "Rejected"
 
 export interface LeaveRequest {
   id: string
@@ -76,7 +85,8 @@ export interface LeaveRequest {
   updated_at: string
 }
 
-export type LeaveDecision = "approved" | "rejected"
+/** Contract §5 — frozen. */
+export type LeaveDecision = "Approved" | "Rejected"
 
 export interface LeaveApproval {
   id: string

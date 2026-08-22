@@ -17,7 +17,6 @@ import {
 } from "@/components/ui/select"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useAttendance } from "@/features/attendance/hooks"
-import { useAuth } from "@/features/auth/auth-context"
 import { usePeople } from "@/features/employees/hooks"
 import { useLeaveRequests } from "@/features/leave/hooks"
 import { NewEmployeeSheet } from "@/pages/employees/new-employee-sheet"
@@ -30,17 +29,16 @@ const today = format(now, "yyyy-MM-dd")
 const todayIsWorkingDay = !isWeekend(now)
 
 export default function EmployeesPage() {
-  const { user } = useAuth()
   const { data: people = [], isLoading } = usePeople()
   const { data: todayAttendance = [] } = useAttendance({ from: today, to: today })
-  const { data: approvedRequests = [] } = useLeaveRequests({ status: "approved" })
+  const { data: approvedRequests = [] } = useLeaveRequests({ status: "Approved" })
   const [search, setSearch] = React.useState("")
   const [department, setDepartment] = React.useState<string>("all")
 
   const statusFor = (employeeId: string) => {
     if (isOnApprovedLeave(employeeId, now, approvedRequests)) return "leave" as const
     const record = todayAttendance.find((r) => r.employee_id === employeeId)
-    if (record?.status === "present" || record?.status === "half_day") return "present" as const
+    if (record?.status === "Present" || record?.status === "Half-day") return "present" as const
     return todayIsWorkingDay ? ("absent" as const) : ("off" as const)
   }
 
@@ -49,8 +47,8 @@ export default function EmployeesPage() {
     const matchesSearch =
       !q ||
       p.employee.full_name.toLowerCase().includes(q) ||
-      p.employee.job_title.toLowerCase().includes(q) ||
-      p.employee.department.toLowerCase().includes(q)
+      (p.employee.job_title ?? "").toLowerCase().includes(q) ||
+      (p.employee.department ?? "").toLowerCase().includes(q)
     const matchesDept = department === "all" || p.employee.department === department
     return matchesSearch && matchesDept
   })
@@ -60,7 +58,7 @@ export default function EmployeesPage() {
       <PageHeader
         title="Employee Directory"
         description={`${people.length} people across Dayflow Technologies`}
-        actions={user ? <NewEmployeeSheet currentUserRole={user.profile.role} /> : null}
+        actions={<NewEmployeeSheet />}
       />
 
       <div className="mb-5 flex flex-col gap-3 sm:flex-row">
@@ -119,10 +117,10 @@ export default function EmployeesPage() {
                   </div>
                   <div className="min-w-0">
                     <p className="truncate text-sm font-medium text-df-text">{p.employee.full_name}</p>
-                    <p className="truncate text-xs text-df-text-muted">{p.employee.job_title}</p>
+                    <p className="truncate text-xs text-df-text-muted">{p.employee.job_title || "—"}</p>
                   </div>
                   <span className="rounded-full bg-df-surface-alt px-2.5 py-0.5 text-xs text-df-text-muted">
-                    {p.employee.department}
+                    {p.employee.department || "—"}
                   </span>
                 </Card>
               </Link>

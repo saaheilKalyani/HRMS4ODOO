@@ -16,7 +16,7 @@ import { EmployeeMonthView } from "@/pages/attendance/employee-month-view"
 
 export default function AttendancePage() {
   const { user } = useAuth()
-  const isManager = user?.profile.role === "admin" || user?.profile.role === "hr"
+  const isManager = user?.profile.role === "admin"
   const { data: people = [] } = usePeople()
 
   const [view, setView] = React.useState<"daily" | "employee">("daily")

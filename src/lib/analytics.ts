@@ -25,8 +25,8 @@ export function weeklyAttendanceBuckets(
     const inWeek = records.filter(
       (r) => r.attendance_date >= weekStartStr && r.attendance_date <= weekEndStr
     )
-    const present = inWeek.filter((r) => r.status === "present").length
-    const away = inWeek.filter((r) => r.status !== "present").length
+    const present = inWeek.filter((r) => r.status === "Present").length
+    const away = inWeek.filter((r) => r.status !== "Present").length
 
     buckets.push({ label: format(weekStart, "MMM d"), present, away })
   }

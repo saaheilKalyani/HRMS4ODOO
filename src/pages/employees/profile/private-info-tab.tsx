@@ -74,11 +74,15 @@ export function PrivateInfoTab({
             isEditing={isEditing}
             input={register && <Input type="email" {...register("personal_email")} />}
           />
-          <Field label="Date of joining" value={formatDate(employee.joining_date)} isEditing={false} />
+          <Field
+            label="Date of joining"
+            value={employee.joining_date ? formatDate(employee.joining_date) : ""}
+            isEditing={false}
+          />
           <div className="sm:col-span-2">
             <Field
               label="Residing address"
-              value={employee.address}
+              value={employee.address ?? ""}
               isEditing={isEditing}
               input={register && <Input {...register("address")} />}
             />

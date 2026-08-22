@@ -32,7 +32,7 @@ export function AdminDailyView() {
 
   const { data: people = [] } = usePeople()
   const { data: records = [], isLoading } = useAttendance({ from: dateStr, to: dateStr })
-  const { data: approvedRequests = [] } = useLeaveRequests({ status: "approved" })
+  const { data: approvedRequests = [] } = useLeaveRequests({ status: "Approved" })
 
   const rows = people
     .map((p) => {
@@ -42,7 +42,7 @@ export function AdminDailyView() {
       if (record) status = attendanceStatusMeta(record.status)
       else if (onLeave) status = { tone: "info", label: "On Leave" }
       else if (dateIsWeekend) status = { tone: "neutral", label: "Weekend" }
-      else status = attendanceStatusMeta("absent")
+      else status = attendanceStatusMeta("Absent")
       return { person: p, record, status }
     })
     .filter(({ person }) => person.employee.full_name.toLowerCase().includes(search.toLowerCase()))
@@ -107,7 +107,7 @@ export function AdminDailyView() {
                       <AvatarInitials name={person.employee.full_name} size="sm" />
                       <div className="min-w-0">
                         <p className="truncate text-sm font-medium text-df-text">{person.employee.full_name}</p>
-                        <p className="truncate text-xs text-df-text-subtle">{person.employee.department}</p>
+                        <p className="truncate text-xs text-df-text-subtle">{person.employee.department || "—"}</p>
                       </div>
                     </div>
                   </TableCell>

@@ -42,12 +42,9 @@ function App() {
                   <Route path={paths.settings} element={<SettingsPage />} />
                   <Route path={paths.unauthorized} element={<UnauthorizedPage />} />
 
-                  <Route element={<RoleRoute allow={["admin", "hr"]} />}>
+                  <Route element={<RoleRoute allow={["admin"]} />}>
                     <Route path={paths.employees} element={<EmployeesPage />} />
                     <Route path="/employees/:employeeId" element={<EmployeeProfilePage mode="directory" />} />
-                  </Route>
-
-                  <Route element={<RoleRoute allow={["admin"]} />}>
                     <Route path={paths.salary} element={<SalaryOverviewPage />} />
                   </Route>
                 </Route>

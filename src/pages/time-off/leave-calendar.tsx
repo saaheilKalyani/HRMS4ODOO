@@ -16,10 +16,10 @@ import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import type { LeaveRequest, LeaveType } from "@/types/domain"
 
-const legend: { status: "approved" | "pending" | "rejected"; label: string; dot: string }[] = [
-  { status: "approved", label: "Validated", dot: "bg-df-success" },
-  { status: "pending", label: "To Approve", dot: "bg-df-warning" },
-  { status: "rejected", label: "Refused", dot: "bg-df-danger" },
+const legend: { status: "Approved" | "Pending" | "Rejected"; label: string; dot: string }[] = [
+  { status: "Approved", label: "Validated", dot: "bg-df-success" },
+  { status: "Pending", label: "To Approve", dot: "bg-df-warning" },
+  { status: "Rejected", label: "Refused", dot: "bg-df-danger" },
 ]
 
 const weekdayLabels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
@@ -82,7 +82,7 @@ export function LeaveCalendar({
                 {dayRequests.slice(0, 3).map((r) => {
                   const type = leaveTypes.find((t) => t.id === r.leave_type_id)
                   const dotClass =
-                    r.status === "approved" ? "bg-df-success" : r.status === "pending" ? "bg-df-warning" : "bg-df-danger"
+                    r.status === "Approved" ? "bg-df-success" : r.status === "Pending" ? "bg-df-warning" : "bg-df-danger"
                   return (
                     <span
                       key={r.id}

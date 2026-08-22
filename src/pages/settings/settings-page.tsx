@@ -8,10 +8,10 @@ import { useAuth } from "@/features/auth/auth-context"
 import { useTheme } from "@/hooks/use-theme"
 import { resetDemoData } from "@/lib/mock/db"
 import { paths } from "@/routes/paths"
+import type { UserRole } from "@/types/domain"
 
-const roleLabel: Record<string, string> = {
+const roleLabel: Record<UserRole, string> = {
   admin: "Admin",
-  hr: "HR Officer",
   employee: "Employee",
 }
 

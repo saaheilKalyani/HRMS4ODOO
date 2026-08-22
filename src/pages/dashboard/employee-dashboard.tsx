@@ -43,11 +43,11 @@ export function EmployeeDashboard() {
   const { data: leaveTypes = [] } = useLeaveTypes()
   const { data: salary } = useSalaryStructure(employeeId)
 
-  const presentDays = monthAttendance.filter((r) => r.status === "present" || r.status === "half_day").length
-  const leaveDays = monthAttendance.filter((r) => r.status === "leave").length
+  const presentDays = monthAttendance.filter((r) => r.status === "Present" || r.status === "Half-day").length
+  const leaveDays = monthAttendance.filter((r) => r.status === "Leave").length
   const workingDaysSoFar = countWeekdays(monthStart, new Date())
   const paidBalance = balances.find((b) => b.leave_type_id === "lt-paid")
-  const pendingCount = recentRequests.filter((r) => r.status === "pending").length
+  const pendingCount = recentRequests.filter((r) => r.status === "Pending").length
 
   const todayMeta = today ? attendanceStatusMeta(today.status) : null
 
@@ -55,7 +55,7 @@ export function EmployeeDashboard() {
     <div>
       <PageHeader
         title={`${timeGreeting()}, ${firstName}`}
-        description={`${user!.employee.job_title} · ${user!.employee.department} · Dayflow Technologies`}
+        description={`${user!.employee.job_title ?? "—"} · ${user!.employee.department ?? "—"} · Dayflow Technologies`}
       />
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -65,7 +65,7 @@ export function EmployeeDashboard() {
           icon={<ClockIcon className="size-4" />}
           trend={
             todayMeta
-              ? { direction: today?.status === "present" ? "up" : "down", label: todayMeta.label }
+              ? { direction: today?.status === "Present" ? "up" : "down", label: todayMeta.label }
               : undefined
           }
         />

@@ -9,7 +9,7 @@ import { NewRequestSheet } from "@/pages/time-off/new-request-sheet"
 
 export default function TimeOffPage() {
   const { user } = useAuth()
-  const isManager = user?.profile.role === "admin" || user?.profile.role === "hr"
+  const isManager = user?.profile.role === "admin"
 
   const { data: leaveTypes = [] } = useLeaveTypes()
   const { data: myRequests = [] } = useLeaveRequests({ employeeId: user?.employee.id })

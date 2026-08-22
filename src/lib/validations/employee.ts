@@ -8,7 +8,7 @@ export const newEmployeeSchema = z.object({
   department: z.string().min(1, "Select a department"),
   jobTitle: z.string().min(1, "Required"),
   joiningDate: z.string().min(1, "Required"),
-  role: z.enum(["employee", "hr", "admin"]),
+  role: z.enum(["employee", "admin"]),
 })
 export type NewEmployeeValues = z.infer<typeof newEmployeeSchema>
 
@@ -37,6 +37,6 @@ export const employeeCoreEditSchema = z.object({
   phone: z.string().min(6, "Enter a valid phone number"),
   department: z.string().min(1, "Required"),
   jobTitle: z.string().min(1, "Required"),
-  employmentStatus: z.enum(["active", "inactive", "on_leave", "terminated"]),
+  employmentStatus: z.enum(["Active", "Inactive"]),
 })
 export type EmployeeCoreEditValues = z.infer<typeof employeeCoreEditSchema>

@@ -1,3 +1,28 @@
+/**
+ * Mock "backend" — a localStorage-backed stand-in for the real Supabase
+ * service layer, so the UI is fully wired end to end while auth/DB/RLS are
+ * built out. Every record shape matches the frozen contracts exactly
+ * ("Dayflow — API & Data Contracts v1.0.md", "DB_SCHEMA_README.md").
+ *
+ * Function names here are pragmatic, not contract-literal (e.g. one
+ * `listAttendance(filter)` instead of separate `getMyAttendance()` /
+ * `getAttendance()`). When the real Supabase layer lands, it should expose
+ * the contract's exact operation names (§28); only the `queryFn`/`mutationFn`
+ * bodies in `src/features/*\/hooks.ts` need to be repointed at it — the
+ * hooks are the intended seam. Rough mapping to §28 for reference:
+ *
+ *   listPeople / getPersonByEmployeeId   -> getEmployees / getEmployee
+ *   getTodayAttendance, checkIn, checkOut -> same names in the contract
+ *   listAttendance(filter)               -> getMyAttendance / getAttendance
+ *   listLeaveRequests(filter)            -> getMyLeaveRequests / getLeaveRequests
+ *   createLeaveRequest                   -> same name in the contract
+ *   decideLeaveRequest({decision})       -> approveLeave / rejectLeave
+ *   getSalaryStructure                   -> getMySalary / getEmployeeSalary
+ *   updateSalaryComponents               -> updateSalary (contract's version
+ *                                            only covers basic_salary/allowances/
+ *                                            deductions — see SalaryComponentsDetail
+ *                                            note in types/domain.ts)
+ */
 import { addDays, format, isWeekend } from "date-fns"
 
 import { generateLoginId, generateTempPassword } from "@/lib/auth/generate-login-id"
@@ -21,7 +46,7 @@ import type {
   UserRole,
 } from "@/types/domain"
 
-const STORAGE_KEY = "dayflow:db:v1"
+const STORAGE_KEY = "dayflow:db:v2"
 const dateStr = (d: Date) => format(d, "yyyy-MM-dd")
 
 export interface Person {
@@ -163,7 +188,7 @@ export async function createEmployee(input: NewEmployeeInput): Promise<NewEmploy
     department: input.department,
     job_title: input.jobTitle,
     joining_date: input.joiningDate,
-    employment_status: "active",
+    employment_status: "Active",
     profile_picture_url: null,
     created_at: now,
     updated_at: now,
@@ -321,7 +346,7 @@ export async function checkIn(employeeId: string): Promise<AttendanceRecord> {
   }
   if (record) {
     record.check_in = now
-    record.status = "present"
+    record.status = "Present"
     record.updated_at = now
   } else {
     record = {
@@ -330,7 +355,7 @@ export async function checkIn(employeeId: string): Promise<AttendanceRecord> {
       attendance_date: today,
       check_in: now,
       check_out: null,
-      status: "present",
+      status: "Present",
       total_hours: null,
       created_at: now,
       updated_at: now,
@@ -353,7 +378,7 @@ export async function checkOut(employeeId: string): Promise<AttendanceRecord> {
   record.check_out = now.toISOString()
   const hours = (now.getTime() - new Date(record.check_in).getTime()) / (1000 * 60 * 60)
   record.total_hours = Math.round(hours * 100) / 100
-  record.status = hours < 5 ? "half_day" : "present"
+  record.status = hours < 5 ? "Half-day" : "Present"
   record.updated_at = now.toISOString()
   save(state)
   return record
@@ -402,7 +427,7 @@ export async function createLeaveRequest(input: NewLeaveRequestInput): Promise<L
     start_date: input.startDate,
     end_date: input.endDate,
     reason: input.reason,
-    status: "pending",
+    status: "Pending",
     created_at: now,
     updated_at: now,
   }
@@ -423,7 +448,7 @@ function markAttendanceAsLeave(employeeId: string, startDate: string, endDate: s
       if (existing) {
         existing.check_in = null
         existing.check_out = null
-        existing.status = "leave"
+        existing.status = "Leave"
         existing.total_hours = null
         existing.updated_at = new Date().toISOString()
       } else {
@@ -433,7 +458,7 @@ function markAttendanceAsLeave(employeeId: string, startDate: string, endDate: s
           attendance_date: ds,
           check_in: null,
           check_out: null,
-          status: "leave",
+          status: "Leave",
           total_hours: null,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
@@ -467,7 +492,7 @@ export async function decideLeaveRequest(input: DecideLeaveInput): Promise<Leave
     created_at: new Date().toISOString(),
   })
 
-  if (input.decision === "approved") {
+  if (input.decision === "Approved") {
     markAttendanceAsLeave(request.employee_id, request.start_date, request.end_date)
     const balance = state.leaveBalances.find(
       (b) => b.employee_id === request.employee_id && b.leave_type_id === request.leave_type_id
@@ -536,6 +561,9 @@ export async function updateSalaryComponents(
   const basic = components.find((c) => c.key === "basic")?.value ?? 0
   const allowances = components.filter((c) => c.key !== "basic").reduce((s, c) => s + c.value, 0)
   const pf = Math.round(((basic * updated.pf_employee_percent) / 100) * 100) / 100
+  // basic_salary + allowances always sums to monthWage (Fixed Allowance is the
+  // remainder by construction), so this stays equal to the contract's
+  // net_salary = basic_salary + allowances - deductions.
   const structure = state.salaryStructures.find((s) => s.employee_id === employeeId)
   if (structure) {
     structure.basic_salary = basic

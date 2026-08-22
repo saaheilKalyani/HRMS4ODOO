@@ -15,10 +15,10 @@ import { CheckInOutWidget } from "@/features/attendance/checkin-widget"
 import { useAuth } from "@/features/auth/auth-context"
 import { useTheme } from "@/hooks/use-theme"
 import { paths } from "@/routes/paths"
+import type { UserRole } from "@/types/domain"
 
-const roleLabel: Record<string, string> = {
+const roleLabel: Record<UserRole, string> = {
   admin: "Admin",
-  hr: "HR Officer",
   employee: "Employee",
 }
 

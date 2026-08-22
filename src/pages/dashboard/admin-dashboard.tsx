@@ -54,28 +54,28 @@ export function AdminDashboard() {
   const { data: people = [] } = usePeople()
   const { data: todayAttendance = [] } = useAttendance({ from: today, to: today })
   const { data: allRecent = [] } = useAttendance()
-  const { data: pendingRequests = [] } = useLeaveRequests({ status: "pending" })
-  const { data: approvedRequests = [] } = useLeaveRequests({ status: "approved" })
+  const { data: pendingRequests = [] } = useLeaveRequests({ status: "Pending" })
+  const { data: approvedRequests = [] } = useLeaveRequests({ status: "Approved" })
   const { data: leaveTypes = [] } = useLeaveTypes()
   const decide = useDecideLeaveRequest()
   const [decidingId, setDecidingId] = React.useState<string | null>(null)
 
   const now = new Date()
   const totalEmployees = people.length
-  const presentToday = todayAttendance.filter((r) => r.status === "present" || r.status === "half_day").length
+  const presentToday = todayAttendance.filter((r) => r.status === "Present" || r.status === "Half-day").length
   const onLeaveToday = people.filter((p) => isOnApprovedLeave(p.employee.id, now, approvedRequests)).length
   const chartData = React.useMemo(() => weeklyAttendanceBuckets(allRecent), [allRecent])
 
   const employeeName = (employeeId: string) =>
     people.find((p) => p.employee.id === employeeId)?.employee.full_name ?? "Unknown"
 
-  const handleDecide = async (requestId: string, decision: "approved" | "rejected") => {
+  const handleDecide = async (requestId: string, decision: "Approved" | "Rejected") => {
     setDecidingId(requestId)
     try {
       await decide.mutateAsync({
         requestId,
         decision,
-        comment: decision === "approved" ? "Approved from dashboard." : "Rejected from dashboard.",
+        comment: decision === "Approved" ? "Approved from dashboard." : "Rejected from dashboard.",
         approverId: user!.profile.id,
       })
     } finally {
@@ -151,7 +151,7 @@ export function AdminDashboard() {
                         size="icon-sm"
                         variant="outline"
                         disabled={decidingId === r.id}
-                        onClick={() => handleDecide(r.id, "approved")}
+                        onClick={() => handleDecide(r.id, "Approved")}
                         aria-label="Approve"
                         className="text-df-success hover:bg-df-success-soft"
                       >
@@ -161,7 +161,7 @@ export function AdminDashboard() {
                         size="icon-sm"
                         variant="outline"
                         disabled={decidingId === r.id}
-                        onClick={() => handleDecide(r.id, "rejected")}
+                        onClick={() => handleDecide(r.id, "Rejected")}
                         aria-label="Reject"
                         className="text-df-danger hover:bg-df-danger-soft"
                       >

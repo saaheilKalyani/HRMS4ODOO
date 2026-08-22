@@ -61,9 +61,9 @@ export function AdminRequestsTable() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All statuses</SelectItem>
-            <SelectItem value="pending">Pending</SelectItem>
-            <SelectItem value="approved">Approved</SelectItem>
-            <SelectItem value="rejected">Rejected</SelectItem>
+            <SelectItem value="Pending">Pending</SelectItem>
+            <SelectItem value="Approved">Approved</SelectItem>
+            <SelectItem value="Rejected">Rejected</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -109,14 +109,14 @@ export function AdminRequestsTable() {
                       <StatusPill tone={meta.tone} label={meta.label} />
                     </TableCell>
                     <TableCell className="text-right">
-                      {r.status === "pending" ? (
+                      {r.status === "Pending" ? (
                         <div className="flex justify-end gap-1">
                           <Button
                             size="icon-sm"
                             variant="outline"
                             className="text-df-success hover:bg-df-success-soft"
                             aria-label="Approve"
-                            onClick={() => setDialog({ requestId: r.id, decision: "approved", name })}
+                            onClick={() => setDialog({ requestId: r.id, decision: "Approved", name })}
                           >
                             <CheckIcon />
                           </Button>
@@ -125,7 +125,7 @@ export function AdminRequestsTable() {
                             variant="outline"
                             className="text-df-danger hover:bg-df-danger-soft"
                             aria-label="Reject"
-                            onClick={() => setDialog({ requestId: r.id, decision: "rejected", name })}
+                            onClick={() => setDialog({ requestId: r.id, decision: "Rejected", name })}
                           >
                             <XIcon />
                           </Button>

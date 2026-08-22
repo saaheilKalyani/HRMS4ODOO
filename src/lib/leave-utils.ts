@@ -10,6 +10,6 @@ export function isOnApprovedLeave(
 ): boolean {
   const d = format(date, "yyyy-MM-dd")
   return approvedRequests.some(
-    (r) => r.employee_id === employeeId && r.status === "approved" && r.start_date <= d && d <= r.end_date
+    (r) => r.employee_id === employeeId && r.status === "Approved" && r.start_date <= d && d <= r.end_date
   )
 }

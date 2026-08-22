@@ -30,8 +30,8 @@ export function EmployeeMonthView({ employeeId }: { employeeId: string }) {
     to: format(monthEnd, "yyyy-MM-dd"),
   })
 
-  const presentDays = records.filter((r) => r.status === "present" || r.status === "half_day").length
-  const leaveDays = records.filter((r) => r.status === "leave").length
+  const presentDays = records.filter((r) => r.status === "Present" || r.status === "Half-day").length
+  const leaveDays = records.filter((r) => r.status === "Leave").length
   const workingDays = countWeekdays(month, isCurrent ? new Date() : monthEnd)
 
   return (

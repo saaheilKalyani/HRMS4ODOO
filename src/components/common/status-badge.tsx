@@ -48,24 +48,24 @@ export function StatusDot({ tone, className }: { tone: Tone; className?: string 
 
 export function attendanceStatusMeta(status: AttendanceStatus): { tone: Tone; label: string } {
   switch (status) {
-    case "present":
+    case "Present":
       return { tone: "success", label: "Present" }
-    case "absent":
+    case "Absent":
       return { tone: "danger", label: "Absent" }
-    case "half_day":
+    case "Half-day":
       return { tone: "warning", label: "Half-day" }
-    case "leave":
+    case "Leave":
       return { tone: "info", label: "On Leave" }
   }
 }
 
 export function leaveStatusMeta(status: LeaveStatus): { tone: Tone; label: string } {
   switch (status) {
-    case "pending":
+    case "Pending":
       return { tone: "warning", label: "Pending" }
-    case "approved":
+    case "Approved":
       return { tone: "success", label: "Approved" }
-    case "rejected":
+    case "Rejected":
       return { tone: "danger", label: "Rejected" }
   }
 }

@@ -50,16 +50,16 @@ export function DecisionDialog({
       <DialogContent className="sm:max-w-sm">
         <form onSubmit={handleSubmit(onSubmit)} noValidate>
           <DialogHeader>
-            <DialogTitle>{decision === "approved" ? "Approve" : "Reject"} request</DialogTitle>
+            <DialogTitle>{decision === "Approved" ? "Approve" : "Reject"} request</DialogTitle>
             <DialogDescription>
-              {decision === "approved" ? "Approve" : "Reject"} {employeeName}'s leave request and leave a comment.
+              {decision === "Approved" ? "Approve" : "Reject"} {employeeName}'s leave request and leave a comment.
             </DialogDescription>
           </DialogHeader>
           <div className="py-2">
             <Textarea
               rows={3}
               autoFocus
-              placeholder={decision === "approved" ? "e.g. Approved, enjoy the time off." : "e.g. Coverage conflict, please pick different dates."}
+              placeholder={decision === "Approved" ? "e.g. Approved, enjoy the time off." : "e.g. Coverage conflict, please pick different dates."}
               aria-invalid={!!errors.comment}
               {...register("comment")}
             />
@@ -69,10 +69,10 @@ export function DecisionDialog({
             <Button
               type="submit"
               className="w-full"
-              variant={decision === "rejected" ? "destructive" : "default"}
+              variant={decision === "Rejected" ? "destructive" : "default"}
               disabled={decide.isPending}
             >
-              {decide.isPending ? "Saving…" : decision === "approved" ? "Confirm approval" : "Confirm rejection"}
+              {decide.isPending ? "Saving…" : decision === "Approved" ? "Confirm approval" : "Confirm rejection"}
             </Button>
           </DialogFooter>
         </form>

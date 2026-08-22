@@ -34,8 +34,8 @@ export default function EmployeeProfilePage({ mode }: { mode: "self" | "director
   React.useEffect(() => {
     if (!person) return
     reset({
-      phone: person.employee.phone,
-      address: person.employee.address,
+      phone: person.employee.phone ?? "",
+      address: person.employee.address ?? "",
       about: person.detail.about,
       loves_about_job: person.detail.loves_about_job,
       interests: person.detail.interests,
