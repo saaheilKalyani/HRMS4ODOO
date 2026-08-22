@@ -13,6 +13,7 @@ import AttendancePage from "@/pages/attendance/attendance-page"
 import DashboardPage from "@/pages/dashboard/dashboard-page"
 import EmployeeProfilePage from "@/pages/employees/employee-profile-page"
 import EmployeesPage from "@/pages/employees/employees-page"
+import MyProfilePage from "@/pages/employee/MyProfilePage"
 import SalaryOverviewPage from "@/pages/payroll/salary-overview-page"
 import NotFoundPage from "@/pages/shared/not-found"
 import UnauthorizedPage from "@/pages/shared/unauthorized"
@@ -40,6 +41,7 @@ function App() {
                 <Route element={<AppShell />}>
                   <Route path={paths.dashboard} element={<DashboardPage />} />
                   <Route path={paths.profile} element={<EmployeeProfilePage mode="self" />} />
+                  <Route path={paths.myProfile} element={<MyProfilePage />} />
                   <Route path={paths.attendance} element={<AttendancePage />} />
                   <Route path={paths.timeOff} element={<TimeOffPage />} />
                   <Route path={paths.settings} element={<SettingsPage />} />

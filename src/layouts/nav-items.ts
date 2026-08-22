@@ -3,6 +3,7 @@ import {
   LayoutDashboardIcon,
   PlaneTakeoffIcon,
   SettingsIcon,
+  UserIcon,
   UsersIcon,
   WalletIcon,
   type LucideIcon,
@@ -24,6 +25,7 @@ export const navItems: NavItem[] = [
   { label: "Attendance", to: paths.attendance, icon: CalendarCheckIcon },
   { label: "Time Off", to: paths.timeOff, icon: PlaneTakeoffIcon },
   { label: "Salary", to: paths.salary, icon: WalletIcon, roles: ["admin"] },
+  { label: "My Profile", to: paths.myProfile, icon: UserIcon },
   { label: "Settings", to: paths.settings, icon: SettingsIcon },
 ]
 

@@ -7,6 +7,7 @@ export const paths = {
   employees: "/employees",
   employee: (id: string) => `/employees/${id}`,
   profile: "/profile",
+  myProfile: "/my-profile",
   attendance: "/attendance",
   timeOff: "/time-off",
   salary: "/salary",

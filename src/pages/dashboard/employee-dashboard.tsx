@@ -16,10 +16,10 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { CheckInOutWidget } from "@/features/attendance/checkin-widget"
-import { useAttendance, useTodayAttendance } from "@/features/attendance/hooks"
-import { useAuth } from "@/features/auth/auth-context"
+import { useAttendance } from "@/features/attendance/hooks"
+import { useAuth } from "@/features/auth/AuthContext"
 import { useLeaveBalances, useLeaveRequests, useLeaveTypes } from "@/features/leave/hooks"
-import { useSalaryStructure } from "@/features/payroll/hooks"
+import { useEmployeeDashboard } from "@/features/reports/hooks"
 import { countWeekdays } from "@/lib/date-utils"
 import { formatCurrency, formatDateShort, formatTime } from "@/lib/format"
 import { timeGreeting } from "@/lib/greeting"
@@ -33,7 +33,9 @@ export function EmployeeDashboard() {
   const monthStart = startOfMonth(new Date())
   const monthStartStr = format(monthStart, "yyyy-MM-dd")
 
-  const { data: today } = useTodayAttendance(employeeId)
+  const { data: dashboard } = useEmployeeDashboard()
+  const today = dashboard?.todayAttendance ?? null
+  const salary = dashboard?.salarySummary ?? null
   const { data: monthAttendance = [], isLoading: attendanceLoading } = useAttendance({
     employeeId,
     from: monthStartStr,
@@ -41,7 +43,6 @@ export function EmployeeDashboard() {
   const { data: recentRequests = [] } = useLeaveRequests({ employeeId })
   const { data: balances = [] } = useLeaveBalances(employeeId)
   const { data: leaveTypes = [] } = useLeaveTypes()
-  const { data: salary } = useSalaryStructure(employeeId)
 
   const presentDays = monthAttendance.filter((r) => r.status === "Present" || r.status === "Half-day").length
   const leaveDays = monthAttendance.filter((r) => r.status === "Leave").length

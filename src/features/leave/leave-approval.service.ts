@@ -64,7 +64,7 @@ export async function approveLeave(
   input: ApproveLeaveInput
 ): Promise<ServiceResult<{ success: boolean }>> {
   try {
-    const { data, error } = await supabase.rpc('approve_leave', {
+    const { error } = await supabase.rpc('approve_leave', {
       p_leave_request_id: input.leave_request_id,
       p_comment: input.comment || null,
     });
@@ -103,7 +103,7 @@ export async function rejectLeave(
   input: RejectLeaveInput
 ): Promise<ServiceResult<{ success: boolean }>> {
   try {
-    const { data, error } = await supabase.rpc('reject_leave', {
+    const { error } = await supabase.rpc('reject_leave', {
       p_leave_request_id: input.leave_request_id,
       p_comment: input.comment || null,
     });

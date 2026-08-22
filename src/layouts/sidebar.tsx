@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
-import { useAuth } from "@/features/auth/auth-context"
+import { useAuth } from "@/features/auth/AuthContext"
 import { navItemsForRole } from "@/layouts/nav-items"
 import { cn } from "@/lib/utils"
 import { paths } from "@/routes/paths"

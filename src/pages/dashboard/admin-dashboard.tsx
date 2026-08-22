@@ -9,7 +9,6 @@ import {
   WalletIcon,
   XIcon,
 } from "lucide-react"
-import { format } from "date-fns"
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis } from "recharts"
 import { Link } from "react-router-dom"
 
@@ -21,16 +20,14 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { EmptyState } from "@/components/common/empty-state"
 import { useAttendance } from "@/features/attendance/hooks"
-import { useAuth } from "@/features/auth/auth-context"
+import { useAuth } from "@/features/auth/AuthContext"
 import { useDecideLeaveRequest, useLeaveRequests, useLeaveTypes } from "@/features/leave/hooks"
 import { usePeople } from "@/features/employees/hooks"
+import { useAdminDashboard } from "@/features/reports/hooks"
 import { weeklyAttendanceBuckets } from "@/lib/analytics"
 import { formatDateShort, formatTime } from "@/lib/format"
-import { isOnApprovedLeave } from "@/lib/leave-utils"
 import { timeGreeting } from "@/lib/greeting"
 import { paths } from "@/routes/paths"
-
-const today = format(new Date(), "yyyy-MM-dd")
 
 function ChartTooltip({ active, payload, label }: { active?: boolean; payload?: { name: string; value: number; color: string }[]; label?: string }) {
   if (!active || !payload?.length) return null
@@ -52,18 +49,16 @@ export function AdminDashboard() {
   const firstName = user!.profile.display_name.split(" ")[0]
 
   const { data: people = [] } = usePeople()
-  const { data: todayAttendance = [] } = useAttendance({ from: today, to: today })
+  const { data: dashboard } = useAdminDashboard()
   const { data: allRecent = [] } = useAttendance()
   const { data: pendingRequests = [] } = useLeaveRequests({ status: "Pending" })
-  const { data: approvedRequests = [] } = useLeaveRequests({ status: "Approved" })
   const { data: leaveTypes = [] } = useLeaveTypes()
   const decide = useDecideLeaveRequest()
   const [decidingId, setDecidingId] = React.useState<string | null>(null)
 
-  const now = new Date()
-  const totalEmployees = people.length
-  const presentToday = todayAttendance.filter((r) => r.status === "Present" || r.status === "Half-day").length
-  const onLeaveToday = people.filter((p) => isOnApprovedLeave(p.employee.id, now, approvedRequests)).length
+  const totalEmployees = dashboard?.totalEmployees ?? 0
+  const presentToday = dashboard?.presentEmployees ?? 0
+  const onLeaveToday = dashboard?.leaveEmployees ?? 0
   const chartData = React.useMemo(() => weeklyAttendanceBuckets(allRecent), [allRecent])
 
   const employeeName = (employeeId: string) =>

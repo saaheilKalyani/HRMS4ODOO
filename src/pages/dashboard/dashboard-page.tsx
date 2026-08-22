@@ -1,4 +1,4 @@
-import { useAuth } from "@/features/auth/auth-context"
+import { useAuth } from "@/features/auth/AuthContext"
 import { AdminDashboard } from "@/pages/dashboard/admin-dashboard"
 import { EmployeeDashboard } from "@/pages/dashboard/employee-dashboard"
 

@@ -1,6 +1,6 @@
 import { PageHeader } from "@/components/common/page-header"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { useAuth } from "@/features/auth/auth-context"
+import { useAuth } from "@/features/auth/AuthContext"
 import { useLeaveBalances, useLeaveRequests, useLeaveTypes } from "@/features/leave/hooks"
 import { AdminRequestsTable } from "@/pages/time-off/admin-requests-table"
 import { AllocationTable } from "@/pages/time-off/allocation-table"

@@ -7,7 +7,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { useAuth } from "@/features/auth/auth-context"
+import { useAuth } from "@/features/auth/AuthContext"
 import { AuthLayout } from "@/layouts/auth-layout"
 import { signInSchema, type SignInValues } from "@/lib/validations/auth"
 import { paths } from "@/routes/paths"
@@ -35,7 +35,7 @@ export default function SignInPage() {
   const onSubmit = async (values: SignInValues) => {
     setError(null)
     try {
-      await signIn(values)
+      await signIn({ email: values.loginId, password: values.password })
       const from = (location.state as { from?: Location })?.from?.pathname ?? paths.dashboard
       navigate(from, { replace: true })
     } catch (e) {

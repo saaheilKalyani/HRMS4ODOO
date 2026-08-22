@@ -126,23 +126,29 @@ export async function getEmployeeDashboard(): Promise<ServiceResult<EmployeeDash
 
     if (recentError) throw recentError;
 
-    const { data: pendingLeaves } = await supabase
+    const { data: pendingLeaves, error: pendingError } = await supabase
       .from('leave_requests')
       .select('id', { count: 'exact' })
       .eq('employee_id', employeeId)
       .eq('status', 'Pending');
 
-    const { data: approvedLeaves } = await supabase
+    if (pendingError) throw pendingError;
+
+    const { data: approvedLeaves, error: approvedError } = await supabase
       .from('leave_requests')
       .select('id', { count: 'exact' })
       .eq('employee_id', employeeId)
       .eq('status', 'Approved');
 
-    const { data: rejectedLeaves } = await supabase
+    if (approvedError) throw approvedError;
+
+    const { data: rejectedLeaves, error: rejectedError } = await supabase
       .from('leave_requests')
       .select('id', { count: 'exact' })
       .eq('employee_id', employeeId)
       .eq('status', 'Rejected');
+
+    if (rejectedError) throw rejectedError;
 
     const { data: salary, error: salaryError } = await supabase
       .from('salary_structures')
@@ -194,39 +200,51 @@ export async function getAdminDashboard(): Promise<ServiceResult<AdminDashboardD
   try {
     const today = new Date().toISOString().split('T')[0];
 
-    const { count: totalEmployees } = await supabase
+    const { count: totalEmployees, error: totalError } = await supabase
       .from('employees')
       .select('id', { count: 'exact' })
       .eq('employment_status', 'Active');
 
-    const { count: presentEmployees } = await supabase
+    if (totalError) throw totalError;
+
+    const { count: presentEmployees, error: presentError } = await supabase
       .from('attendance_records')
       .select('id', { count: 'exact' })
       .eq('attendance_date', today)
       .eq('status', 'Present');
 
-    const { count: absentEmployees } = await supabase
+    if (presentError) throw presentError;
+
+    const { count: absentEmployees, error: absentError } = await supabase
       .from('attendance_records')
       .select('id', { count: 'exact' })
       .eq('attendance_date', today)
       .eq('status', 'Absent');
 
-    const { count: leaveEmployees } = await supabase
+    if (absentError) throw absentError;
+
+    const { count: leaveEmployees, error: leaveError } = await supabase
       .from('attendance_records')
       .select('id', { count: 'exact' })
       .eq('attendance_date', today)
       .eq('status', 'Leave');
 
-    const { count: pendingLeaveRequests } = await supabase
+    if (leaveError) throw leaveError;
+
+    const { count: pendingLeaveRequests, error: pendingReqError } = await supabase
       .from('leave_requests')
       .select('id', { count: 'exact' })
       .eq('status', 'Pending');
 
-    const { data: recentAttendance } = await supabase
+    if (pendingReqError) throw pendingReqError;
+
+    const { data: recentAttendance, error: recentError } = await supabase
       .from('attendance_records')
       .select('*')
       .order('attendance_date', { ascending: false })
       .limit(10);
+
+    if (recentError) throw recentError;
 
     return {
       data: {

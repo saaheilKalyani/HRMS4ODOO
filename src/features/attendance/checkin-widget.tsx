@@ -3,7 +3,7 @@ import { LogInIcon, LogOutIcon } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { useCheckIn, useCheckOut, useTodayAttendance } from "@/features/attendance/hooks"
-import { useAuth } from "@/features/auth/auth-context"
+import { useAuth } from "@/features/auth/AuthContext"
 import { formatTime } from "@/lib/format"
 import { cn } from "@/lib/utils"
 

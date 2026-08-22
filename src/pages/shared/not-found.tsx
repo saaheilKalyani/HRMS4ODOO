@@ -2,7 +2,7 @@ import { CompassIcon } from "lucide-react"
 import { Link } from "react-router-dom"
 
 import { Button } from "@/components/ui/button"
-import { useAuth } from "@/features/auth/auth-context"
+import { useAuth } from "@/features/auth/AuthContext"
 import { paths } from "@/routes/paths"
 
 export default function NotFoundPage() {

@@ -165,45 +165,22 @@ export async function createEmployee(
   }
 
   try {
-    const { data: profile, error: profileError } = await supabase
-      .from('profiles')
-      .select('id')
-      .eq('email', input.email)
-      .single();
-
-    if (profileError || !profile) {
-      return {
-        data: null,
-        error: {
-          code: 'NOT_FOUND',
-          message: 'No user found with this email. Ask them to sign up first.',
-        },
-      };
-    }
-
-    const employeeCode = 'EMP-' + Math.random().toString(36).substring(2, 10).toUpperCase();
-
-    const { data: employee, error } = await supabase
-      .from('employees')
-      .upsert({
-        profile_id: profile.id,
-        employee_code: employeeCode,
-        full_name: input.full_name,
-        phone: input.phone || null,
-        address: input.address || null,
-        department: input.department || null,
-        job_title: input.job_title || null,
-        joining_date: input.joining_date || null,
-        employment_status: input.employment_status || 'Active',
-        profile_picture_url: input.profile_picture_url || null,
-      })
-      .select()
-      .single();
+    const { data, error } = await supabase.rpc('create_employee_with_auth', {
+      p_email: input.email,
+      p_full_name: input.full_name,
+      p_phone: input.phone || null,
+      p_address: input.address || null,
+      p_department: input.department || null,
+      p_job_title: input.job_title || null,
+      p_joining_date: input.joining_date || null,
+      p_employment_status: input.employment_status || 'Active',
+      p_profile_picture_url: input.profile_picture_url || null,
+    });
 
     if (error) throw error;
 
     return {
-      data: employee as Employee,
+      data: data as Employee,
       error: null,
     };
   } catch (error) {

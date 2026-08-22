@@ -9,7 +9,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { useAuth } from "@/features/auth/auth-context"
+import { useAuth } from "@/features/auth/AuthContext"
 import { usePeople } from "@/features/employees/hooks"
 import { AdminDailyView } from "@/pages/attendance/admin-daily-view"
 import { EmployeeMonthView } from "@/pages/attendance/employee-month-view"
