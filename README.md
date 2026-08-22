@@ -801,11 +801,4 @@ Built with:
 
 ------------------------------------------------------------------------
 
-```{=html}
-<p align="center">
-```
-`<strong>`{=html}Dayflow`</strong>`{=html}`<br />`{=html} Every workday,
-perfectly aligned.
-```{=html}
-</p>
-```
+
