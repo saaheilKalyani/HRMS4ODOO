@@ -1,33 +1,16 @@
-import * as dotenv from 'dotenv';
 import { createClient } from '@supabase/supabase-js';
+import * as dotenv from 'dotenv';
 
-<<<<<<< HEAD
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
-=======
-// Load .env file FIRST
 dotenv.config();
 
-// Debug: Check if env vars are loaded
-console.log('VITE_SUPABASE_URL:', process.env.VITE_SUPABASE_URL ? '✅ Set' : '❌ Missing');
-console.log('VITE_SUPABASE_ANON_KEY:', process.env.VITE_SUPABASE_ANON_KEY ? '✅ Set' : '❌ Missing');
-
-const supabaseUrl = process.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = process.env.VITE_SUPABASE_ANON_KEY;
->>>>>>> b0b0d837071c9885ad734bd4dd21f49987ab64f7
-
-if (!supabaseUrl || !supabaseAnonKey) {
-  console.error('\n❌ Environment variables not found.');
-  console.error('Make sure .env file exists with:');
-  console.error('VITE_SUPABASE_URL=https://your-project.supabase.co');
-  console.error('VITE_SUPABASE_ANON_KEY=your-anon-key');
-  process.exit(1);
-}
+// Get credentials from .env or hardcode them
+const supabaseUrl = process.env.VITE_SUPABASE_URL || 'https://YOUR_PROJECT_ID.supabase.co';
+const supabaseAnonKey = process.env.VITE_SUPABASE_ANON_KEY || 'YOUR_ANON_KEY';
 
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 async function testAttendance() {
-  console.log('\n=== Testing Attendance ===\n');
+  console.log('=== Testing Attendance ===\n');
 
   // Sign in
   console.log('Signing in...');
@@ -38,6 +21,7 @@ async function testAttendance() {
 
   if (sessionError) {
     console.log('❌ Sign in failed:', sessionError.message);
+    console.log('Update email/password in the test file.');
     return;
   }
   console.log('✅ Signed in as:', session.user.email);
@@ -50,10 +34,10 @@ async function testAttendance() {
     .single();
 
   if (empError || !employee) {
-    console.log('❌ No employee record found.');
+    console.log('❌ No employee record found for this user.');
     return;
   }
-  console.log('✅ Employee:', employee.full_name);
+  console.log('✅ Employee:', employee.full_name, `(${employee.employee_code})`);
 
   const today = new Date().toISOString().split('T')[0];
   console.log('📅 Today:', today);
@@ -75,7 +59,7 @@ async function testAttendance() {
     console.log('❌ Check-in failed:', checkInError.message);
   } else {
     console.log('✅ Check-in successful');
-    console.log('   Check-in time:', checkInData.check_in);
+    console.log('   Time:', checkInData.check_in);
   }
 
   // Test 2: Duplicate Check-In
@@ -94,7 +78,7 @@ async function testAttendance() {
   if (dupError) {
     console.log('✅ Duplicate blocked:', dupError.message);
   } else {
-    console.log('❌ Duplicate was allowed!');
+    console.log('❌ Duplicate was allowed! UNIQUE constraint not working.');
   }
 
   // Test 3: Check-Out
@@ -111,11 +95,11 @@ async function testAttendance() {
     console.log('❌ Check-out failed:', checkOutError.message);
   } else {
     console.log('✅ Check-out successful');
-    console.log('   Check-out time:', checkOutData.check_out);
+    console.log('   Time:', checkOutData.check_out);
     console.log('   Total hours:', checkOutData.total_hours);
   }
 
-  // Test 4: My Attendance
+  // Test 4: Get My Attendance
   console.log('\n--- Test 4: My Attendance History ---');
   const { data: myRecords, error: myError } = await supabase
     .from('attendance_records')
