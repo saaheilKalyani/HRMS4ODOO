@@ -1,27 +1,20 @@
-import { Navigate } from 'react-router-dom';
+import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../features/auth/AuthContext';
+import { paths } from './paths';
 import type { Role } from '../types';
 
 interface RoleRouteProps {
-  allowedRole: Role;
-  children: React.ReactNode;
-  redirectTo?: string;
+  allow: Role[];
 }
 
-export const RoleRoute: React.FC<RoleRouteProps> = ({
-  allowedRole,
-  children,
-  redirectTo = '/',
-}) => {
+export const RoleRoute = ({ allow }: RoleRouteProps) => {
   const { profile, loading } = useAuth();
 
-  if (loading) {
-    return <div>Loading...</div>;
+  if (loading) return null;
+
+  if (!profile || !allow.includes(profile.role)) {
+    return <Navigate to={paths.unauthorized} replace />;
   }
 
-  if (!profile || profile.role !== allowedRole) {
-    return <Navigate to={redirectTo} replace />;
-  }
-
-  return <>{children}</>;
+  return <Outlet />;
 };

@@ -2,12 +2,13 @@ import { QueryClientProvider } from "@tanstack/react-query"
 import { Navigate, Route, BrowserRouter as Router, Routes } from "react-router-dom"
 
 import { TooltipProvider } from "@/components/ui/tooltip"
-import { AuthProvider } from "@/features/auth/auth-context"
+import { AuthProvider } from "@/features/auth/AuthContext"
 import { AppShell } from "@/layouts/app-shell"
 import { queryClient } from "@/lib/query-client"
 import ForgotPasswordPage from "@/pages/auth/forgot-password"
 import ResetPasswordPage from "@/pages/auth/reset-password"
-import SignInPage from "@/pages/auth/sign-in"
+import LoginPage from "@/pages/auth/LoginPage"
+import SignupPage from "@/pages/auth/SignupPage"
 import AttendancePage from "@/pages/attendance/attendance-page"
 import DashboardPage from "@/pages/dashboard/dashboard-page"
 import EmployeeProfilePage from "@/pages/employees/employee-profile-page"
@@ -17,7 +18,8 @@ import NotFoundPage from "@/pages/shared/not-found"
 import UnauthorizedPage from "@/pages/shared/unauthorized"
 import SettingsPage from "@/pages/settings/settings-page"
 import TimeOffPage from "@/pages/time-off/time-off-page"
-import { GuestRoute, ProtectedRoute, RoleRoute } from "@/routes/protected-route"
+import { GuestRoute, ProtectedRoute } from "@/routes/ProtectedRoute"
+import { RoleRoute } from "@/routes/RoleRoute"
 import { paths } from "@/routes/paths"
 
 function App() {
@@ -28,7 +30,8 @@ function App() {
           <TooltipProvider>
             <Routes>
               <Route element={<GuestRoute />}>
-                <Route path={paths.signIn} element={<SignInPage />} />
+                <Route path={paths.signIn} element={<LoginPage />} />
+                <Route path={paths.signUp} element={<SignupPage />} />
                 <Route path={paths.forgotPassword} element={<ForgotPasswordPage />} />
                 <Route path={paths.resetPassword} element={<ResetPasswordPage />} />
               </Route>

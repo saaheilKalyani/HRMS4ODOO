@@ -6,6 +6,7 @@ import {
   signUp as serviceSignUp,
   signOut as serviceSignOut,
   getCurrentUser,
+  mapSupabaseError,
   type SignInInput,
   type SignUpInput,
   type SignUpResult,
@@ -21,6 +22,13 @@ interface AuthContextValue {
   signUp: (input: SignUpInput) => Promise<{ error: any; data?: SignUpResult | null } | { error: null; data?: SignUpResult | null }>;
   signOut: () => Promise<void>;
   refreshUser: () => Promise<void>;
+  /**
+   * Back-compat aliases so components written against the old mock
+   * auth-context shape (`user.profile`, `user.employee`, `isLoading`)
+   * keep working unchanged now that this is the live provider.
+   */
+  user: { profile: Profile; employee: Employee } | null;
+  isLoading: boolean;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -51,7 +59,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const refreshUser = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
+    const { data: { user }, error } = await supabase.auth.getUser();
+    if (error) {
+      console.error('refreshUser failed:', mapSupabaseError(error));
+    }
     if (user) {
       await applyCurrentUser(user.id);
     } else {
@@ -65,7 +76,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     let mounted = true;
 
     const init = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
+      const { data: { session }, error } = await supabase.auth.getSession();
+      if (error) {
+        console.error('Failed to load session:', mapSupabaseError(error));
+      }
       if (session?.user) {
         await applyCurrentUser(session.user.id);
       }
@@ -125,6 +139,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     signUp,
     signOut,
     refreshUser,
+    user: profile && employee ? { profile, employee } : null,
+    isLoading: loading,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
