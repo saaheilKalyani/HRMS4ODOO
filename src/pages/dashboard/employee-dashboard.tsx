@@ -16,11 +16,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { CheckInOutWidget } from "@/features/attendance/checkin-widget"
-<<<<<<< HEAD
-import { useAttendance } from "@/features/attendance/hooks"
-=======
 import { useAttendance, useTodayAttendance } from "@/features/attendance/hooks"
->>>>>>> 435aaf28f0f68c46987594e4ca966dc35eaa3bf1
 import { useAuth } from "@/features/auth/AuthContext"
 import { useLeaveBalances, useLeaveRequests, useLeaveTypes } from "@/features/leave/hooks"
 import { useEmployeeDashboard } from "@/features/reports/hooks"
