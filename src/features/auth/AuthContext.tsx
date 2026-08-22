@@ -18,7 +18,7 @@ interface AuthContextValue {
   employee: Employee | null;
   loading: boolean;
   signIn: (input: SignInInput) => Promise<{ error: any } | { error: null }>;
-  signUp: (input: SignUpInput) => Promise<{ error: any; data?: SignUpResult } | { error: null; data?: SignUpResult }>;
+  signUp: (input: SignUpInput) => Promise<{ error: any; data?: SignUpResult | null } | { error: null; data?: SignUpResult | null }>;
   signOut: () => Promise<void>;
   refreshUser: () => Promise<void>;
 }
@@ -31,7 +31,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [employee, setEmployee] = useState<Employee | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const applyCurrentUser = async (userId: string) => {
+  const applyCurrentUser = async (_userId: string) => {
     try {
       const { data, error } = await getCurrentUser();
       if (error || !data) {

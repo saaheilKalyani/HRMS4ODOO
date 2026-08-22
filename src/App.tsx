@@ -1,4 +1,3 @@
-<<<<<<< Updated upstream
 import { QueryClientProvider } from "@tanstack/react-query"
 import { Navigate, Route, BrowserRouter as Router, Routes } from "react-router-dom"
 
@@ -59,56 +58,6 @@ function App() {
       </Router>
     </QueryClientProvider>
   )
-=======
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider } from './features/auth/AuthContext';
-import { ProtectedRoute } from './routes/ProtectedRoute';
-import { RoleRoute } from './routes/RoleRoute';
-import LoginPage from './pages/auth/LoginPage';
-import SignupPage from './pages/auth/SignupPage';
-import ResetPasswordPage from './pages/auth/ResetPasswordPage';
-import EmployeeDashboard from './pages/employee/EmployeeDashboard';
-import AdminDashboard from './pages/admin/AdminDashboard';
-
-function App() {
-  return (
-    <AuthProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/signup" element={<SignupPage />} />
-          <Route path="/reset-password" element={<ResetPasswordPage />} />
-
-          {/* Employee routes */}
-          <Route
-            path="/employee"
-            element={
-              <ProtectedRoute>
-                <RoleRoute allowedRole="employee" redirectTo="/admin">
-                  <EmployeeDashboard />
-                </RoleRoute>
-              </ProtectedRoute>
-            }
-          />
-
-          {/* Admin routes */}
-          <Route
-            path="/admin"
-            element={
-              <ProtectedRoute>
-                <RoleRoute allowedRole="admin" redirectTo="/employee">
-                  <AdminDashboard />
-                </RoleRoute>
-              </ProtectedRoute>
-            }
-          />
-
-          <Route path="*" element={<Navigate to="/login" replace />} />
-        </Routes>
-      </BrowserRouter>
-    </AuthProvider>
-  );
->>>>>>> Stashed changes
 }
 
 export default App;
