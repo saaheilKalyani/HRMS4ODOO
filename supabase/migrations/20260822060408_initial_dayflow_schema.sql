@@ -26,28 +26,6 @@ END;
 $$;
 
 
--- ------------------------------------------------------------
--- Helper: admin authorization
--- SECURITY DEFINER avoids RLS recursion when checking profiles.
--- ------------------------------------------------------------
-
-CREATE OR REPLACE FUNCTION public.is_admin()
-RETURNS boolean
-LANGUAGE sql
-STABLE
-SECURITY DEFINER
-SET search_path = public
-AS $$
-    SELECT EXISTS (
-        SELECT 1
-        FROM public.profiles
-        WHERE id = auth.uid()
-          AND role = 'admin'
-          AND is_active = TRUE
-    );
-$$;
-
-
 -- ============================================================
 -- 1. PROFILES
 -- ============================================================
@@ -256,6 +234,28 @@ CREATE TABLE public.salary_structures (
     CONSTRAINT salary_net_non_negative
         CHECK (basic_salary + allowances - deductions >= 0)
 );
+
+
+-- ------------------------------------------------------------
+-- Helper: admin authorization
+-- SECURITY DEFINER avoids RLS recursion when checking profiles.
+-- ------------------------------------------------------------
+
+CREATE OR REPLACE FUNCTION public.is_admin()
+RETURNS boolean
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = public
+AS $$
+    SELECT EXISTS (
+        SELECT 1
+        FROM public.profiles
+        WHERE id = auth.uid()
+          AND role = 'admin'
+          AND is_active = TRUE
+    );
+$$;
 
 
 -- ============================================================

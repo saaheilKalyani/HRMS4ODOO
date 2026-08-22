@@ -21,7 +21,7 @@ export interface ServiceResult<T> {
   error: ApiError | null;
 }
 
-const mapSupabaseError = (error: any): ApiError => {
+export const mapSupabaseError = (error: any): ApiError => {
   const message = error?.message || 'An unexpected error occurred.';
 
   if (
