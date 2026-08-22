@@ -1,10 +1,6 @@
 import * as dotenv from 'dotenv';
 import { createClient } from '@supabase/supabase-js';
 
-<<<<<<< HEAD
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
-=======
 // Load .env file FIRST
 dotenv.config();
 
@@ -14,7 +10,6 @@ console.log('VITE_SUPABASE_ANON_KEY:', process.env.VITE_SUPABASE_ANON_KEY ? '✅
 
 const supabaseUrl = process.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = process.env.VITE_SUPABASE_ANON_KEY;
->>>>>>> b0b0d837071c9885ad734bd4dd21f49987ab64f7
 
 if (!supabaseUrl || !supabaseAnonKey) {
   console.error('\n❌ Environment variables not found.');
