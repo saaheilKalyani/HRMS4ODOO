@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dialog"
 import { Textarea } from "@/components/ui/textarea"
 import { useDecideLeaveRequest } from "@/features/leave/hooks"
-import { useAuth } from "@/features/auth/auth-context"
+import { useAuth } from "@/features/auth/AuthContext"
 import { decisionCommentSchema, type DecisionCommentValues } from "@/lib/validations/leave"
 import type { LeaveDecision } from "@/types/domain"
 

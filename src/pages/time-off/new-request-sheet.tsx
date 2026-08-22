@@ -25,7 +25,7 @@ import {
 } from "@/components/ui/sheet"
 import { Textarea } from "@/components/ui/textarea"
 import { useCreateLeaveRequest, useLeaveTypes } from "@/features/leave/hooks"
-import { useAuth } from "@/features/auth/auth-context"
+import { useAuth } from "@/features/auth/AuthContext"
 import { daysBetweenInclusive } from "@/lib/format"
 import { leaveRequestSchema, type LeaveRequestValues } from "@/lib/validations/leave"
 

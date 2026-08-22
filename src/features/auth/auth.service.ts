@@ -49,6 +49,13 @@ export const mapSupabaseError = (error: any): ApiError => {
     return { code: 'FORBIDDEN', message: 'You do not have permission to perform this action.' };
   }
 
+  if (message.toLowerCase().includes('rate limit')) {
+    return {
+      code: 'OPERATION_FAILED',
+      message: 'Too many attempts right now — please wait a few minutes and try again.',
+    };
+  }
+
   return { code: 'DATABASE_ERROR', message };
 };
 

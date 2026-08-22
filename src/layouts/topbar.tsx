@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
 import { CheckInOutWidget } from "@/features/attendance/checkin-widget"
-import { useAuth } from "@/features/auth/auth-context"
+import { useAuth } from "@/features/auth/AuthContext"
 import { useTheme } from "@/hooks/use-theme"
 import { paths } from "@/routes/paths"
 import type { UserRole } from "@/types/domain"

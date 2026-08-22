@@ -1,0 +1,745 @@
+Phase 1 — Supabase Project Setup
+What to create
+Supabase Project
+├── PostgreSQL database
+├── Authentication
+└── API access
+
+Configure:
+
+VITE_SUPABASE_URL
+VITE_SUPABASE_PUBLISHABLE_KEY
+
+Create:
+
+src/lib/supabase/client.ts
+Mandatory because
+
+Everything else depends on the Supabase project and client connection.
+
+Expected result
+
+React can successfully connect to Supabase.
+
+Verify
+
+Run a simple Supabase query and confirm there is no connection/configuration error.
+
+Commit
+chore: initialize supabase project and client
+Phase 2 — Database Migration
+Create
+supabase/migrations/
+└── 001_initial_dayflow_schema.sql
+
+Migration must create the frozen 7 tables:
+
+profiles
+employees
+attendance_records
+leave_types
+leave_requests
+leave_approvals
+salary_structures
+
+Also implement:
+
+PKs
+FKs
+UNIQUE
+CHECK constraints
+DEFAULT values
+generated columns
+indexes
+FK delete behavior
+
+These are all part of the finalized schema.
+
+Mandatory because
+
+Every backend operation depends on these tables and relationships.
+
+Expected result
+
+Database structure exactly matches the frozen schema.
+
+Verify
+
+Check Supabase Table Editor / SQL:
+
+7 tables exist
+relationships exist
+constraints exist
+generated columns work
+Commit
+feat: implement initial dayflow database migration
+Phase 3 — Database Triggers + Indexes
+Implement
+
+updated_at trigger for:
+
+profiles
+employees
+attendance_records
+leave_requests
+salary_structures
+
+Also create the required indexes:
+
+employees(department)
+
+attendance_records(employee_id)
+attendance_records(attendance_date)
+
+leave_requests(employee_id)
+leave_requests(status)
+leave_requests(start_date, end_date)
+
+salary_structures(employee_id)
+salary_structures(effective_from)
+
+The schema explicitly requires these timestamp triggers and recommends these indexes.
+
+Mandatory because
+
+It provides automatic timestamp maintenance and usable query performance.
+
+Verify
+
+Update a row → updated_at changes.
+
+Run queries with the indexed fields and verify the indexes exist.
+
+Commit
+feat: add database triggers and indexes
+Phase 4 — RLS Foundation
+Implement RLS on all application tables.
+
+Employee access:
+
+profiles → own
+employees → own
+attendance → own
+leave_requests → own
+leave_types → active/read
+salary → own
+leave_approvals → no approval
+
+Admin access:
+
+profiles
+employees
+attendance
+leave_types
+leave_requests
+leave_approvals
+salary
+
+RLS must use authenticated identity/role, not frontend state.
+
+Mandatory because
+
+Frontend role checks are not security.
+
+Expected result
+
+Database itself prevents unauthorized access.
+
+Verify
+
+Test with two employee accounts:
+
+Employee A → Employee B data = DENIED
+Employee → Admin operation = DENIED
+Employee → Own data = ALLOWED
+Admin → authorized data = ALLOWED
+Commit
+feat: implement row level security policies
+Phase 5 — Supabase Auth
+Files
+src/features/auth/
+├── auth.service.ts
+└── auth.types.ts
+
+src/lib/supabase/
+└── auth.ts
+Implement
+signUp()
+signIn()
+getSession()
+getCurrentUser()
+signOut()
+requestPasswordReset()
+updatePassword()
+
+Also:
+
+onAuthStateChange()
+
+These are the exact authentication operations in the contract.
+
+Signup requirement
+
+Public signup:
+
+Auth user
+ ↓
+profile
+ ↓
+role = employee
+ ↓
+employee
+
+Public user must never select:
+
+role = admin
+
+Mandatory because
+
+Every subsequent RLS and user-specific operation depends on authenticated identity.
+
+Verify
+
+Test:
+
+Signup ✓
+Signin ✓
+Session persistence ✓
+Logout ✓
+Password reset ✓
+Employee role ✓
+Admin cannot be selected through signup ✓
+Commit
+feat: implement supabase authentication
+Phase 6 — Profile Backend
+Implement
+getMyProfile()
+updateMyProfile()
+
+Allowed employee update fields:
+
+phone
+address
+profile_picture_url
+
+Cannot modify:
+
+role
+is_active
+employee_code
+employment_status
+profile_id
+
+Mandatory because
+
+Authenticated users need their application profile and employee information.
+
+Verify
+Employee → own profile ✓
+Employee → another profile ✗
+Employee → change phone ✓
+Employee → change role ✗
+Commit
+feat: implement profile data operations
+Phase 7 — Employee Management
+Implement
+getEmployees()
+getEmployee(employee_id)
+createEmployee()
+updateEmployee(employee_id)
+
+Admin operations must remain Admin-only.
+
+Mandatory because
+
+Admin needs employee directory/management.
+
+Verify
+Admin → employee directory ✓
+Admin → employee details ✓
+Employee → employee directory ✗
+Employee → modify another employee ✗
+Commit
+feat: implement employee management operations
+Phase 8 — Attendance Backend
+Implement
+getTodayAttendance()
+checkIn()
+checkOut()
+getMyAttendance()
+getAttendance()
+
+Database rules
+UNIQUE(employee_id, attendance_date)
+
+check_out > check_in
+
+total_hours = generated
+
+Mandatory because
+
+Attendance is one of the core P0 employee workflows.
+
+Verify
+Check-in ✓
+Duplicate check-in ✗
+Check-out ✓
+Check-out before check-in ✗
+Own history ✓
+Other employee history ✗
+Admin attendance ✓
+Commits
+feat: implement attendance check in
+feat: implement attendance check out
+feat: implement attendance queries
+test: validate attendance constraints
+Phase 9 — Leave Types
+Implement
+getLeaveTypes()
+
+Seed:
+
+Paid Leave
+Sick Leave
+Unpaid Leave
+Casual Leave
+
+These are the frozen P0 values.
+
+Verify
+Active leave types returned ✓
+Inactive types hidden from employee workflow ✓
+Commit
+feat: implement leave type operations and seed data
+
+Phase 10 — Leave Requests
+Implement
+createLeaveRequest()
+getMyLeaveRequests()
+getMyLeaveRequest()
+getLeaveRequests()
+getLeaveRequest()
+
+Create request only accepts:
+
+leave_type_id
+start_date
+end_date
+reason
+
+Do not accept from frontend:
+
+employee_id
+status
+created_at
+updated_at
+
+Mandatory because
+
+This creates the employee leave workflow.
+
+Verify
+Create leave ✓
+Default Pending ✓
+Invalid dates ✗
+Own requests ✓
+Other employee requests ✗
+Admin all requests ✓
+Commits
+feat: implement leave request creation
+feat: implement employee leave queries
+feat: implement admin leave queries
+test: validate leave request permissions
+
+Phase 11 — Leave Approval Transaction
+
+This is a mandatory special phase.
+
+Implement
+approveLeave()
+rejectLeave()
+
+Prefer:
+
+Supabase RPC
+     ↓
+PostgreSQL function
+     ↓
+transaction
+
+The approval must atomically:
+
+verify admin
+↓
+verify request
+↓
+verify Pending
+↓
+create leave_approval
+↓
+update leave_requests
+↓
+create/update attendance
+↓
+COMMIT
+
+Mandatory because
+
+Your schema explicitly requires leave approval to be transactional.
+
+Without this, you could end up with:
+
+leave = Approved
+but
+approval = missing
+
+or:
+
+leave = Approved
+but
+attendance = not updated
+Verify
+
+Approve a 3-day leave and check:
+
+leave_requests.status = Approved
+leave_approvals exists
+3 attendance records exist/update
+attendance.status = Leave
+check_in = NULL
+check_out = NULL
+
+Then deliberately cause a failure and verify the entire transaction rolls back.
+
+Commits
+feat: implement transactional leave approval
+feat: implement transactional leave rejection
+test: validate leave approval transaction
+test: validate leave to attendance synchronization
+
+Phase 12 — Payroll Backend
+Implement
+getMySalary()
+getEmployeeSalary(employee_id)
+createSalaryStructure()
+updateSalary(salary_id)
+
+Database calculates:
+
+net_salary =
+basic_salary
++ allowances
+- deductions
+
+Frontend never sends net_salary.
+
+Mandatory because
+
+Salary is a P0 feature and requires strict employee/Admin isolation.
+
+Verify
+Employee → own salary ✓
+Employee → other salary ✗
+Employee → modify salary ✗
+Admin → salary ✓
+Negative values ✗
+net_salary calculated correctly ✓
+Commits
+feat: implement employee salary retrieval
+feat: implement admin salary operations
+test: validate payroll permissions
+test: validate salary calculations
+
+Phase 13 — Dashboard Backend/Data Composition
+
+No new table.
+
+Implement:
+
+getEmployeeDashboard()
+getAdminDashboard()
+
+The dashboard must compose existing data.
+
+Employee dashboard
+employee
+todayAttendance
+recentAttendance
+leaveSummary
+salarySummary
+Admin dashboard
+totalEmployees
+presentEmployees
+absentEmployees
+leaveEmployees
+pendingLeaveRequests
+recentAttendance
+Mandatory because
+
+The frontend already has dashboard UI and needs one consistent data source.
+
+Verify
+
+Compare dashboard values against actual database records.
+
+Commit
+feat: implement employee and admin dashboard data
+
+Phase 14 — Shared API/Data Access Layer
+
+Now organize all backend operations consistently.
+
+Every service should return:
+
+{
+    data: T | null,
+    error: ApiError | null
+}
+
+Structure:
+
+src/features/
+├── auth/
+├── employees/
+├── attendance/
+├── leave/
+└── payroll/
+
+Each feature should expose its operations cleanly.
+
+Mandatory because
+
+This becomes the connection point between your existing dummy frontend and real Supabase.
+
+Verify
+
+Every frozen API operation has:
+
+function
+input
+Supabase query/RPC
+response
+error handling
+Commit
+refactor: standardize backend service layer
+Phase 15 — Backend Integration Testing
+
+Before touching the real frontend:
+
+Test the backend independently.
+
+Test Auth
+signup
+signin
+logout
+session
+password reset
+Test Employee
+profile
+directory
+permissions
+Test Attendance
+check-in
+check-out
+duplicate
+history
+RLS
+Test Leave
+create
+read
+approve
+reject
+transaction
+attendance sync
+Test Payroll
+read
+create
+update
+calculation
+RLS
+Mandatory because
+
+You don't want frontend bugs and backend bugs mixed together.
+
+Verify
+
+All P0 operations in the API contract are executable and return expected data/errors.
+
+Commits
+test: validate authentication workflows
+test: validate employee permissions
+test: validate attendance workflows
+test: validate leave workflows
+test: validate payroll workflows
+test: validate dashboard operations
+Phase 16 — Security Testing
+
+Now specifically attack your own backend.
+
+Test:
+
+Employee A → Employee B data
+Employee → Admin operation
+Employee → salary update
+Employee → leave approval
+Unauthenticated → protected table
+Manipulated employee_id
+Manipulated role
+Manipulated status
+
+The contract explicitly states that frontend state, URL parameters, and hidden fields must not be trusted.
+
+Expected
+
+Every unauthorized operation:
+
+DENIED
+Commit
+test: complete backend authorization and rls security audit
+Phase 17 — Generate Final Types
+
+After database/backend stabilization:
+
+npx supabase gen types typescript --linked > src/types/database.types.ts
+
+Then verify TypeScript compilation.
+
+Commit
+chore: generate final supabase database types
+Phase 18 — Frontend Integration
+
+Only now, according to your plan.
+
+Replace:
+
+dummy data
+
+with:
+
+Supabase service functions
+
+Example:
+
+Dummy attendance
+      ↓
+getMyAttendance()
+Dummy leave
+      ↓
+getMyLeaveRequests()
+Dummy salary
+      ↓
+getMySalary()
+Dummy dashboard
+      ↓
+getEmployeeDashboard()
+Mandatory because
+
+This connects your already-created UI to the actual product.
+
+Verify
+
+Complete real flows:
+
+Signup
+→ Signin
+→ Dashboard
+→ Profile
+→ Check-in
+→ Check-out
+→ Leave
+→ Approval
+→ Salary
+→ Logout
+Commit
+feat: integrate frontend with supabase backend
+Phase 19 — Final Integration Testing
+
+Test the actual application, not individual backend functions.
+
+Employee flow
+Signup
+↓
+Email verification if enabled
+↓
+Signin
+↓
+Dashboard
+↓
+Profile
+↓
+Check-in
+↓
+Check-out
+↓
+Attendance
+↓
+Leave
+↓
+Salary
+↓
+Logout
+Admin flow
+Signin
+↓
+Dashboard
+↓
+Employees
+↓
+Attendance
+↓
+Leave requests
+↓
+Approve/Reject
+↓
+Payroll
+
+These journeys match the frozen contract.
+
+Commit
+test: validate complete end to end application flow
+Phase 20 — Final Release Check
+
+Verify:
+
+[ ] Migration works from clean database
+[ ] All 7 tables exist
+[ ] RLS enabled
+[ ] RLS tested
+[ ] Auth works
+[ ] Signup creates employee
+[ ] Admin cannot be created through public signup
+[ ] Profile works
+[ ] Employee management works
+[ ] Attendance works
+[ ] Leave works
+[ ] Approval transaction works
+[ ] Leave → attendance works
+[ ] Payroll works
+[ ] Dashboards work
+[ ] All API operations implemented
+[ ] No dummy data remains
+[ ] No P0 contract changes
+[ ] Production build works
+Final commit
+chore: finalize dayflow backend release
+Final phase structure
+01  Supabase Setup
+02  Database Migration
+03  Triggers + Indexes
+04  RLS
+05  Authentication
+06  Profile
+07  Employee Management
+08  Attendance
+09  Leave Types
+10  Leave Requests
+11  Leave Approval Transaction
+12  Payroll
+13  Dashboard Data
+14  Backend Service Layer
+15  Backend Integration Testing
+16  Security Testing
+17  Final Types
+18  Frontend Integration
+19  End-to-End Testing
+20  Final Release Check
