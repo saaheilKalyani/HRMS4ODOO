@@ -1,5 +1,5 @@
-import { supabase } from '@/lib/supabase/client';
-import type { AttendanceRecord, AttendanceStatus } from '@/types';
+import { supabase } from '../../lib/supabase/client';
+import type { AttendanceRecord, AttendanceStatus } from '../../types';
 
 export type ApiErrorCode =
   | 'AUTH_ERROR'
@@ -39,14 +39,8 @@ const mapSupabaseError = (error: any): ApiError => {
     return { code: 'CONFLICT', message: 'Attendance already exists for this date.' };
   }
 
-  if (message.toLowerCase().includes('check_out')) {
-    return { code: 'VALIDATION_ERROR', message: 'Check-out must be after check-in.' };
-  }
-
   return { code: 'DATABASE_ERROR', message };
 };
-
-// ---------- Helpers ----------
 
 async function getCurrentUserId(): Promise<string | null> {
   const {
@@ -81,10 +75,6 @@ async function isAdmin(): Promise<boolean> {
   return profile?.role === 'admin' && profile?.is_active === true;
 }
 
-/**
- * getTodayAttendance()
- * Returns the authenticated employee's attendance record for today.
- */
 export async function getTodayAttendance(): Promise<ServiceResult<AttendanceRecord | null>> {
   const userId = await getCurrentUserId();
   if (!userId) {
@@ -103,7 +93,6 @@ export async function getTodayAttendance(): Promise<ServiceResult<AttendanceReco
       };
     }
 
-    // Get today's date in YYYY-MM-DD format
     const today = new Date().toISOString().split('T')[0];
 
     const { data, error } = await supabase
@@ -124,11 +113,6 @@ export async function getTodayAttendance(): Promise<ServiceResult<AttendanceReco
   }
 }
 
-/**
- * checkIn()
- * Creates today's attendance record with check_in time.
- * Database derives: employee_id, attendance_date, check_in
- */
 export async function checkIn(): Promise<ServiceResult<AttendanceRecord>> {
   const userId = await getCurrentUserId();
   if (!userId) {
@@ -171,11 +155,6 @@ export async function checkIn(): Promise<ServiceResult<AttendanceRecord>> {
   }
 }
 
-/**
- * checkOut()
- * Updates today's attendance record with check_out time.
- * Database derives: total_hours
- */
 export async function checkOut(): Promise<ServiceResult<AttendanceRecord>> {
   const userId = await getCurrentUserId();
   if (!userId) {
@@ -197,7 +176,6 @@ export async function checkOut(): Promise<ServiceResult<AttendanceRecord>> {
     const today = new Date().toISOString().split('T')[0];
     const now = new Date().toISOString();
 
-    // First, get today's record to verify check_in exists and check_out is null
     const { data: existingRecord, error: fetchError } = await supabase
       .from('attendance_records')
       .select('*')
@@ -226,7 +204,6 @@ export async function checkOut(): Promise<ServiceResult<AttendanceRecord>> {
       };
     }
 
-    // Verify check_out > check_in
     if (new Date(now) <= new Date(existingRecord.check_in)) {
       return {
         data: null,
@@ -234,7 +211,6 @@ export async function checkOut(): Promise<ServiceResult<AttendanceRecord>> {
       };
     }
 
-    // Update with check_out time
     const { data, error } = await supabase
       .from('attendance_records')
       .update({ check_out: now })
@@ -253,13 +229,9 @@ export async function checkOut(): Promise<ServiceResult<AttendanceRecord>> {
   }
 }
 
-/**
- * getMyAttendance()
- * Returns the authenticated employee's attendance history.
- */
 export interface GetMyAttendanceFilters {
-  from?: string; // YYYY-MM-DD
-  to?: string;   // YYYY-MM-DD
+  from?: string;
+  to?: string;
   status?: AttendanceStatus;
 }
 
@@ -313,10 +285,6 @@ export async function getMyAttendance(
   }
 }
 
-/**
- * getAttendance()
- * Admin only - returns attendance records for all employees or filtered.
- */
 export interface GetAttendanceFilters {
   employee_id?: string;
   from?: string;

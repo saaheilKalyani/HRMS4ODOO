@@ -1,5 +1,5 @@
-import { supabase } from '@/lib/supabase/client';
-import type { Profile, Employee } from '@/types';
+import { supabase } from '../../lib/supabase/client';
+import type { Profile, Employee } from '../../types';
 
 export type ApiErrorCode =
   | 'AUTH_ERROR'
@@ -42,8 +42,6 @@ const mapSupabaseError = (error: any): ApiError => {
   return { code: 'DATABASE_ERROR', message };
 };
 
-// ---------- Helpers ----------
-
 async function getCurrentUserId(): Promise<string | null> {
   const {
     data: { user },
@@ -53,10 +51,6 @@ async function getCurrentUserId(): Promise<string | null> {
   return user.id;
 }
 
-/**
- * getMyProfile()
- * Returns the authenticated user's profile and employee record.
- */
 export interface GetMyProfileResult {
   profile: Profile;
   employee: Employee | null;
@@ -72,7 +66,6 @@ export async function getMyProfile(): Promise<ServiceResult<GetMyProfileResult>>
   }
 
   try {
-    // Fetch profile
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
       .select('*')
@@ -81,7 +74,6 @@ export async function getMyProfile(): Promise<ServiceResult<GetMyProfileResult>>
 
     if (profileError) throw profileError;
 
-    // Fetch employee (may be null for admin without employee record)
     const { data: employee, error: employeeError } = await supabase
       .from('employees')
       .select('*')
@@ -102,15 +94,6 @@ export async function getMyProfile(): Promise<ServiceResult<GetMyProfileResult>>
   }
 }
 
-/**
- * updateMyProfile()
- * Updates only allowed employee fields:
- *   - phone
- *   - address
- *   - profile_picture_url
- *
- * All other fields are silently ignored (or can be rejected).
- */
 export interface UpdateMyProfileInput {
   phone?: string;
   address?: string;
@@ -128,7 +111,6 @@ export async function updateMyProfile(
     };
   }
 
-  // Build payload with ONLY allowed fields.
   const payload: Partial<UpdateMyProfileInput> = {};
   if (input.phone !== undefined) payload.phone = input.phone;
   if (input.address !== undefined) payload.address = input.address;
