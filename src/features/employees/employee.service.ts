@@ -1,5 +1,5 @@
-import { supabase } from '@/lib/supabase/client';
-import type { Employee } from '@/types';
+import { supabase } from '../../lib/supabase/client';
+import type { Employee } from '../../types';
 
 export type ApiErrorCode =
   | 'AUTH_ERROR'
@@ -46,8 +46,6 @@ const mapSupabaseError = (error: any): ApiError => {
   return { code: 'DATABASE_ERROR', message };
 };
 
-// ---------- Helpers ----------
-
 async function isAdmin(): Promise<boolean> {
   const {
     data: { user },
@@ -63,10 +61,6 @@ async function isAdmin(): Promise<boolean> {
   return profile?.role === 'admin' && profile?.is_active === true;
 }
 
-/**
- * getEmployees()
- * Admin only - returns the employee directory.
- */
 export interface GetEmployeesFilters {
   search?: string;
   department?: string;
@@ -76,7 +70,6 @@ export interface GetEmployeesFilters {
 export async function getEmployees(
   filters: GetEmployeesFilters = {}
 ): Promise<ServiceResult<Employee[]>> {
-  // Check if user is admin
   if (!(await isAdmin())) {
     return {
       data: null,
@@ -87,7 +80,6 @@ export async function getEmployees(
   try {
     let query = supabase.from('employees').select('*');
 
-    // Apply filters
     if (filters.search) {
       query = query.or(
         `full_name.ilike.%${filters.search}%,employee_code.ilike.%${filters.search}%,department.ilike.%${filters.search}%,job_title.ilike.%${filters.search}%`
@@ -115,10 +107,6 @@ export async function getEmployees(
   }
 }
 
-/**
- * getEmployee(employee_id)
- * Admin only - returns a single employee by ID.
- */
 export async function getEmployee(
   employeeId: string
 ): Promise<ServiceResult<Employee>> {
@@ -154,14 +142,6 @@ export async function getEmployee(
   }
 }
 
-/**
- * createEmployee()
- * Admin only - creates a new employee record.
- * 
- * Note: This operation may also require creating an auth user.
- * For P0, this creates the employee record only.
- * The auth account creation should be handled separately or via a database function.
- */
 export interface CreateEmployeeInput {
   email: string;
   full_name: string;
@@ -169,7 +149,7 @@ export interface CreateEmployeeInput {
   address?: string;
   department?: string;
   job_title?: string;
-  joining_date?: string; // YYYY-MM-DD
+  joining_date?: string;
   employment_status?: 'Active' | 'Inactive';
   profile_picture_url?: string;
 }
@@ -177,7 +157,6 @@ export interface CreateEmployeeInput {
 export async function createEmployee(
   input: CreateEmployeeInput
 ): Promise<ServiceResult<Employee>> {
-  // Check if admin
   if (!(await isAdmin())) {
     return {
       data: null,
@@ -186,7 +165,6 @@ export async function createEmployee(
   }
 
   try {
-    // Find the profile by email (user must have signed up already)
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
       .select('id')
@@ -196,17 +174,15 @@ export async function createEmployee(
     if (profileError || !profile) {
       return {
         data: null,
-        error: { 
-          code: 'NOT_FOUND', 
-          message: 'No user found with this email. Ask them to sign up first.' 
+        error: {
+          code: 'NOT_FOUND',
+          message: 'No user found with this email. Ask them to sign up first.',
         },
       };
     }
 
-    // Generate employee code
     const employeeCode = 'EMP-' + Math.random().toString(36).substring(2, 10).toUpperCase();
 
-    // Create/Update employee record
     const { data: employee, error } = await supabase
       .from('employees')
       .upsert({
@@ -235,10 +211,6 @@ export async function createEmployee(
   }
 }
 
-/**
- * updateEmployee(employee_id)
- * Admin only - updates an employee's details.
- */
 export interface UpdateEmployeeInput {
   full_name?: string;
   phone?: string;
@@ -261,7 +233,6 @@ export async function updateEmployee(
     };
   }
 
-  // Build update payload with only allowed fields
   const payload: Partial<UpdateEmployeeInput> = {};
   if (input.full_name !== undefined) payload.full_name = input.full_name;
   if (input.phone !== undefined) payload.phone = input.phone;
