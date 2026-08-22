@@ -195,3 +195,76 @@ All 7 return `200` with an empty array — expected and correct, since every RLS
 Every local migration's timestamp is matched on `remote` — full deployment confirmed.
 
 **Phase 2 and Phase 4 updated from `Partial` to `Done` in the table above** — the condition (all 7 tables confirmed live with RLS intact) is met, verified directly rather than assumed from the push succeeding alone.
+
+## Phases 7–13 Audit, Functional Test, and a Critical Regression — 2026-08-22 (fourth entry, same day)
+
+### ⚠️ Critical, highest-severity finding: the shared Supabase client module is broken — the entire app cannot run
+
+`src/lib/supabase/client.ts` was found to have been overwritten (committed as `c72b8aa "Update client.ts"`, on top of an earlier rewrite in `b0b0d83`) with a **one-off Node.js debug script** for manually testing attendance check-in/out, not the shared client module the rest of the app depends on. It uses `process.env` + `dotenv` (Node-style, not Vite's `import.meta.env`), calls `process.exit(1)` if env vars are missing (undefined in a browser bundle), auto-runs `testAttendance().catch(console.error)` as a side effect on import, and — critically — **its `supabase` client is a local `const`, never `export`ed.** Every real service file in the app (`auth.service.ts`, `employee.service.ts`, `attendance.service.ts`, `leave-type.service.ts`, `leave-request.service.ts`, `leave-approval.service.ts`, `salary.service.ts`, `dashboard.service.ts`, `profile.service.ts`, `AuthContext.tsx`, `lib/supabase/auth.ts`) imports `{ supabase }` from this file. `npx tsc -p tsconfig.app.json` confirms this with an `error TS2459` on every one of them: `Module declares 'supabase' locally, but it is not exported.` At runtime this is worse than a type error — since `AuthContext.tsx` (the live, wired-in auth provider from the previous pass) imports the same broken binding, `supabase` resolves to `undefined` there too, so the very first effect that calls `supabase.auth.getSession()` will throw. **This means the live app is currently non-functional, not just Phase 7–13 — auth itself is broken.** This was not caused by anything in this pass; it was discovered while running the correct `tsc` invocation for Part 11. Not fixed here — flagged for whoever owns this to restore `client.ts` to a proper exported client factory (the version from earlier passes read `VITE_SUPABASE_URL`/`VITE_SUPABASE_PUBLISHABLE_KEY` via `import.meta.env` and exported `supabase`).
+
+### New, unpushed migration files — a second table/policy conflict, same shape as the one already resolved
+
+Five new local-only migration files were found (`20250101000200_attendance_setup.sql`, `20250101000300_leave_types_setup.sql`, `20250101000400_leave_requests_setup.sql`, `20250101000500_salary_setup.sql`, `20250101000600_leave_approval_rpc.sql`) that did **not** exist in the previous pass. `npx supabase migration list` confirms none of the five are applied to the remote (`"remote":""` for all). They redefine `CREATE TABLE public.attendance_records`, `leave_types`, `leave_requests`, `leave_approvals`, and `salary_structures` — all five already exist on the remote, created by the already-deployed `20260822060408_initial_dayflow_schema.sql`. **Running `npx supabase db push` again as things stand today would fail** on the first of these five files, on the same class of "relation already exists" error as the `profiles`/`employees` conflict resolved two passes ago — just now across five more tables. Not touched this pass (investigation only, as instructed).
+
+**Silver lining — this resolves the apparent RPC-naming bug from the previous pass's Part 5.** `20250101000600_leave_approval_rpc.sql` defines `public.approve_leave(p_leave_request_id, p_comment)` and `public.reject_leave(p_leave_request_id, p_comment)` — these match `leave-approval.service.ts`'s `supabase.rpc('approve_leave', ...)`/`supabase.rpc('reject_leave', ...)` calls exactly, name and parameters. The frontend was written correctly against this migration; it just hasn't been deployed. (The already-deployed `approve_leave_request(p_leave_request_id, p_decision, p_comment)` from the dayflow schema file does very similar work as a single function — these two implementations are redundant with each other if both ever get deployed, though not name-colliding. Which one is canonical is a decision for whoever owns Phase 2/4/11, not decided here.)
+
+### Phase 7–13: service layer audit
+
+All 7 service files exist and are fully implemented (no stubs): `employee.service.ts`, `attendance.service.ts`, `leave-type.service.ts`, `leave-request.service.ts`, `leave-approval.service.ts`, `salary.service.ts`, `dashboard.service.ts`. Notable findings:
+
+- **`createEmployee()` does not call `create_employee_with_auth()`.** It looks up an existing `profiles` row by email and upserts an `employees` row onto it — it assumes the person has already self-registered, which inverts the product's stated HR-provisions-first model and the RPC's design (which creates the `auth.users` row, profile, and employee together with a temp password). It also generates `employee_code` client-side (`Math.random()`-based, different format than the trigger's) and uses `.upsert()` rather than `.insert()`, which would silently overwrite an existing employee row rather than erroring, if called on a profile that already has one.
+- **`checkOut()` duplicates the DB's constraints client-side** — it explicitly checks `existingRecord.check_out` (already-checked-out) and `new Date(now) <= new Date(existingRecord.check_in)` (checkout-after-checkin) before writing, in addition to what the DB's `CHECK` constraint already enforces. `checkIn()` does not duplicate its constraint (`UNIQUE(employee_id, attendance_date)`) — it just inserts and relies on the DB error, mapped to a friendly message.
+- **`createLeaveRequest()`'s input type is correctly restricted** to `{ leave_type_id, start_date, end_date, reason? }`; the actual insert payload sets `employee_id` from a server-side lookup of the caller's own employee record and hardcodes `status: 'Pending'` — neither is client-suppliable.
+- **`createSalaryStructure()`/`updateSalary()` never send `net_salary`** — confirmed by their input types and built payloads, consistent with it being a generated column.
+- **`getAdminDashboard()` and part of `getEmployeeDashboard()` don't check `error`** on several count queries — e.g. `const { count: totalEmployees } = await supabase.from('employees').select('id', { count: 'exact' })...` (five queries in `getAdminDashboard()`, three in `getEmployeeDashboard()`) destructure only `data`/`count`, discarding `error`. A failed query here silently reports `0` instead of surfacing a failure.
+- **No table/column name mismatches found** against the actually-deployed schema, across all 7 services.
+
+### Phase 8 — wiring check: Phases 7–13 are fully implemented and fully disconnected from the UI
+
+| Phase | Service exists? | UI calls it? | Still mock? |
+|---|---|---|---|
+| 7 — Employee Management | Yes | No — `useEmployees.ts` wraps `employee.service.ts` but is itself unused anywhere; live pages use `features/employees/hooks.ts` → `lib/mock/db.ts` | Yes |
+| 8 — Attendance | Yes | No — live pages use `features/attendance/hooks.ts` → mock | Yes |
+| 9 — Leave Types | Yes | No — live pages use `features/leave/hooks.ts` → mock | Yes |
+| 10 — Leave Requests | Yes | No — same mock hooks file | Yes |
+| 11 — Leave Approval | Yes | No — `decision-dialog.tsx` (the live approval UI) calls `useDecideLeaveRequest` from the mock hooks, not `approveLeave`/`rejectLeave` | Yes |
+| 12 — Payroll | Yes | No — live pages use `features/payroll/hooks.ts` → mock | Yes |
+| 13 — Dashboard | Yes | No — live dashboard pages use the mock-backed `usePeople`/`useAttendance` hooks, not `dashboard.service.ts` | Yes |
+
+`src/pages/employee/MyProfilePage.tsx` (Phase 6) is **still unrouted** — confirmed unchanged from the earlier pass, not imported anywhere in `App.tsx`.
+
+### Part 9 — functional test (QA account, for manual cleanup)
+
+The real `/auth/v1/signup` endpoint was blocked by Supabase's email-send rate limit (`429 over_email_send_rate_limit`, no `Retry-After` given). Per explicit direction, this was worked around by inserting directly into `auth.users` via the CLI's authenticated connection — the same bootstrapping mechanism `create_employee_with_auth()` uses internally (pre-confirmed email, no email sent) — which still fires the real `on_auth_user_created` trigger.
+
+**Test records created (additive only, nothing pre-existing touched):**
+- Auth user + profile + employee, email `hrms-qa-test-1787394508@example.com`, profile id `573c3eff-c455-4b06-8d27-6fabe644f7b8`, employee id `0eb686db-6c04-4551-b88d-b37fd49a7d7d`, employee_code `EMP-573C3EFF`. Confirmed `role: employee` (never promoted).
+- One leave request, id `4fd07aa2-83ec-4a16-9371-bc9e433f7fbf`, `leave_type_id` = Casual Leave, dates 2026-08-29 to 2026-08-29, `reason: "QA-TEST automated leave request test"`, `status: Pending`.
+
+**All verified as authenticated employee (not admin):**
+- `leave_types` returned all 4 rows once authenticated (was empty for anonymous, per RLS).
+- The leave request insert correctly derived `employee_id` server-side (from the caller's own employee record via RLS-scoped lookup) rather than accepting it from input.
+- `create_employee_with_auth` RPC, called with this employee-level token, was correctly **denied**: `400 {"code":"P0001","message":"FORBIDDEN: You do not have permission to perform this action."}`. Confirmed no row was created from the attempt.
+- `GET /rest/v1/employees` (unfiltered) returned only the caller's own row, not the full roster — RLS is filtering correctly, not merely blank-blocking.
+
+No check-in/check-out or profile-update test was performed (not required, avoided to keep the test footprint minimal).
+
+### Part 10 — admin-level testing: not attempted, as instructed
+
+No account was promoted to admin. No admin-only functional test (approve/reject leave, `createEmployee`, payroll writes) was attempted. **Follow-up needed:** Phase 11's `approve_leave`/`reject_leave` functions (in the unpushed migration above) have never been exercised live — once deployed, they need a deliberately-authorized admin test account (a human decision, not automatic) to confirm the transaction actually behaves as designed against a real `Pending` request.
+
+### Part 11 — `npx tsc -p tsconfig.app.json` (full output)
+
+37 errors. The `TS2459` "not exported" errors (11 of them) are the `client.ts` regression described above — every real service file plus `AuthContext.tsx` and `lib/supabase/auth.ts`. The `TS2307` "cannot find module" errors (`date-fns`, `react-day-picker`, `framer-motion`) are the same pre-existing missing-dependency issue noted two passes ago, still unresolved, still unrelated to this pass. Two new minor ones: `leave-approval.service.ts` has two unused `data` destructures (`TS6133`), and `client.ts` itself has an unused `dupData` (also `TS6133`, from its debug-script content).
+
+### Confirmed
+
+No `git commit` or `git push` was run. No file under `supabase/migrations/` was modified (investigation only, per instruction). No account was promoted to admin.
+
+## client.ts Regression Fixed — 2026-08-22 (fifth entry, same day)
+
+The critical finding above (the shared Supabase client module overwritten with a Node debug script, breaking `supabase` export for every service file and the live auth provider) is now fixed. `src/lib/supabase/client.ts` was replaced with the minimal exported Vite client (`import.meta.env.VITE_SUPABASE_URL` / `VITE_SUPABASE_PUBLISHABLE_KEY`, throws if missing, exports `supabase`). The debug script's `testAttendance()` logic was preserved, not discarded — moved to a new `scripts/test-attendance.ts`, adapted to import `supabase` from the client module instead of building its own. Note: that script now depends on `import.meta.env`, so it needs a Vite-aware runner (e.g. `vite-node`) to actually execute standalone — it can no longer be run with plain `node`/`ts-node` as the original `dotenv`-based version could.
+
+`npx tsc -p tsconfig.app.json` confirms all 11 `TS2459` "not exported" errors are gone. The remaining 26 errors are unchanged from before this fix: the pre-existing `date-fns`/`react-day-picker`/`framer-motion` missing-dependency errors (still unresolved, out of scope for this pass) and two pre-existing unused-`data` warnings in `leave-approval.service.ts`. The migration conflict (5 unpushed files redefining already-live tables) from the previous entry is also still unresolved — not touched this pass, per instruction.
+
+**The app's auth layer should now actually initialize** (assuming the schema/RLS/deployment state from earlier entries), where before this fix it could not — `supabase` resolving to `undefined` in `AuthContext.tsx` would have thrown on the first `getSession()` call. This has not been verified by actually running the dev server in this pass; only the type-check regression is confirmed fixed.
